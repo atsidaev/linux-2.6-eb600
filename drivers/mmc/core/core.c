@@ -738,9 +738,6 @@ void mmc_rescan(struct work_struct *work)
 	u32 ocr;
 	int err;
 
-#ifdef CONFIG_MMC_UNSAFE_RESUME
-	mutex_lock(&host->carddetect_lock);
-#endif
 	mmc_bus_get(host);
 
 	if (host->bus_ops == NULL) {
@@ -801,10 +798,6 @@ void mmc_rescan(struct work_struct *work)
 out:
 	if (host->caps & MMC_CAP_NEEDS_POLL)
 		mmc_schedule_delayed_work(&host->detect, HZ);
-
-#ifdef CONFIG_MMC_UNSAFE_RESUME
-	mutex_unlock(&host->carddetect_lock);
-#endif
 }
 
 void mmc_start_host(struct mmc_host *host)
