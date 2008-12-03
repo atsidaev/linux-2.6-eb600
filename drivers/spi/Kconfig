@@ -116,6 +116,12 @@ config SPI_GPIO
 	  GPIO operations, you should be able to leverage that for better
 	  speed with a custom version of this driver; see the source code.
 
+config SPI_IC2201
+	tristate "IC2201 MP3 decoder"
+	depends on ARCH_LBOOK_V3
+	help
+	  This enables support of IC2201 MP3 decoder.
+
 config SPI_IMX
 	tristate "Freescale iMX SPI controller"
 	depends on ARCH_IMX && EXPERIMENTAL
