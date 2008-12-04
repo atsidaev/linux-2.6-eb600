@@ -304,4 +304,6 @@ static int __init imx_init(void)
 	return platform_add_devices(devices, ARRAY_SIZE(devices));
 }
 
+#ifdef CONFIG_ARCH_MX1ADS
 subsys_initcall(imx_init);
+#endif

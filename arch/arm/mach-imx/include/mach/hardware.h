@@ -86,6 +86,8 @@ extern void imx_gpio_mode( int gpio_mode );
 
 #ifdef CONFIG_ARCH_MX1ADS
 #include "mx1ads.h"
+#elif defined (CONFIG_MACH_SONY_PRS505)
+#include "prs505.h"
 #endif
 
 #endif

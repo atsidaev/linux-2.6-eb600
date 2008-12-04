@@ -1,2 +1,3 @@
     zreladdr-$(CONFIG_ARCH_MX1ADS)	:= 0x08008000
+    zreladdr-$(CONFIG_MACH_SONY_PRS505)	:= 0x08008000
 

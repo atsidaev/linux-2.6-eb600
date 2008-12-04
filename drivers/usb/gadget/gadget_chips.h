@@ -163,6 +163,12 @@
 #define gadget_is_ci13xxx(g)	0
 #endif
 
+#ifdef CONFIG_USB_GADGET_S1R72V17
+#define gadget_is_s1r72v17(g)	!strcmp("s1r72v17", (g)->name)
+#else
+#define gadget_is_s1r72v17(g)	0
+#endif
+
 // CONFIG_USB_GADGET_SX2
 // CONFIG_USB_GADGET_AU1X00
 // ...
@@ -231,6 +237,8 @@ static inline int usb_gadget_controller_number(struct usb_gadget *gadget)
 		return 0x22;
 	else if (gadget_is_ci13xxx(gadget))
 		return 0x23;
+	else if (gadget_is_s1r72v17(gadget))
+		return 0x24;
 	return -ENOENT;
 }
 

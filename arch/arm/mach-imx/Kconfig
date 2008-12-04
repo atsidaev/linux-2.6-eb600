@@ -8,4 +8,10 @@ config ARCH_MX1ADS
 	help
 	  Say Y here if you are using the Motorola MX1ADS board
 
+config MACH_SONY_PRS505
+        bool "Sony PRS-505 book reader"
+        depends on ARCH_IMX
+	help
+	  Say Y here if you are using the Sony PRS-505 book reader.
+
 endmenu

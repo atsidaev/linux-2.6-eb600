@@ -17,7 +17,11 @@
 		moveq	\rx, #0x00000000	@ physical
 		movne	\rx, #0xe0000000	@ virtual
 		orreq	\rx, \rx, #0x00200000	@ physical
+#ifdef CONFIG_MACH_SONY_PRS505
+		orr	\rx, \rx, #0x00007000	@ UART2 offset
+#else
 		orr	\rx, \rx, #0x00006000	@ UART1 offset
+#endif
 		.endm
 
 		.macro	senduart,rd,rx
