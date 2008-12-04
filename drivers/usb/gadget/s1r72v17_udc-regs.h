@@ -14,7 +14,7 @@
  * @name S1R72_EP0_XXX
  * @brief	definitions of FIFO address.
 */
-#ifdef S1R72_MASS_STORAGE_ONLY 
+#ifdef S1R72_MASS_STORAGE_ONLY
 #define S1R72_EP0_MAX_PKT		64		/** max packet size of endpoint 0 */
 #define S1R72_EPA_MAX_PKT		2048	/** max packet size of endpoint A */
 #define S1R72_EPB_MAX_PKT		2048	/** max packet size of endpoint B */
@@ -30,17 +30,17 @@
 #define S1R72_EPE_MAX_PKT		512		/** max packet size of endpoint E */
 #endif
 /** EP0 FIFO address */
-#define S1R72_EP0_START_ADRS	0x030
+#define S1R72_EP0_START_ADRS		0x030
 #define S1R72_EP0_END_ADRS		S1R72_EP0_START_ADRS + S1R72_EP0_MAX_PKT
-#define S1R72_EPA_START_ADRS	S1R72_EP0_END_ADRS
+#define S1R72_EPA_START_ADRS		S1R72_EP0_END_ADRS
 #define S1R72_EPA_END_ADRS		S1R72_EPA_START_ADRS + S1R72_EPA_MAX_PKT
-#define S1R72_EPB_START_ADRS	S1R72_EPA_END_ADRS
+#define S1R72_EPB_START_ADRS		S1R72_EPA_END_ADRS
 #define S1R72_EPB_END_ADRS		S1R72_EPB_START_ADRS + S1R72_EPB_MAX_PKT
-#define S1R72_EPC_START_ADRS	S1R72_EPB_END_ADRS
+#define S1R72_EPC_START_ADRS		S1R72_EPB_END_ADRS
 #define S1R72_EPC_END_ADRS		S1R72_EPC_START_ADRS + S1R72_EPC_MAX_PKT
-#define S1R72_EPD_START_ADRS	S1R72_EPC_END_ADRS
+#define S1R72_EPD_START_ADRS		S1R72_EPC_END_ADRS
 #define S1R72_EPD_END_ADRS		S1R72_EPD_START_ADRS + S1R72_EPD_MAX_PKT
-#define S1R72_EPE_START_ADRS	S1R72_EPD_END_ADRS
+#define S1R72_EPE_START_ADRS		S1R72_EPD_END_ADRS
 #define S1R72_EPE_END_ADRS		S1R72_EPE_START_ADRS + S1R72_EPE_MAX_PKT
 /*@}*/
 
@@ -87,7 +87,7 @@
  * @name rcD_S1R72_XXX
  * @brief	definitions of register address and bits.
 */
-#define rcD_S1R72_SIE_IntStat 					(0x0B0)
+#define rcD_S1R72_SIE_IntStat					(0x0B0)
 	#define S1R72_NonJ				BIT(6)
 	#define S1R72_RcvSOF			BIT(5)
 	#define S1R72_DetectRESET		BIT(4)
@@ -100,7 +100,7 @@
 			| S1R72_DetectSUSPEND | S1R72_ChirpCmp\
 			| S1R72_RestoreCmp | S1R72_SetAddressCmp)
 
-#define rcD_S1R72_BulkIntStat 					(0x0B3)
+#define rcD_S1R72_BulkIntStat					(0x0B3)
 	#define S1R72_CBW_Cmp			BIT(7)
 	#define S1R72_CBW_LengthErr		BIT(6)
 	#define S1R72_CBW_Err			BIT(5)
@@ -175,7 +175,7 @@
 #define rcD_S1R72_AlarmOUT_IntEnb_H				(0x0CE)
 #define rcD_S1R72_AlarmOUT_IntEnb_L				(0x0CF)
 
-#define rcD_S1R72_NegoControl 					(0x0D0)
+#define rcD_S1R72_NegoControl					(0x0D0)
 	#define S1R72_DisBusDetect		BIT(7)
 	#define S1R72_EnAutoNego		BIT(6)
 	#define S1R72_InSUSPEND			BIT(5)
@@ -185,7 +185,7 @@
 	#define S1R72_GoChirp			BIT(1)
 	#define S1R72_ActiveUSB			BIT(0)
 
-#define rcD_S1R72_XcvrControl 					(0x0D3)
+#define rcD_S1R72_XcvrControl					(0x0D3)
 	#define S1R72_TermSelect		BIT(7)
 	#define S1R72_XcvrSelect		BIT(6)
 	#define S1R72_OpMode			(0x03)
@@ -205,8 +205,8 @@
 #define rcD_S1R72_EPnControl					(0x0D6)
 	#define S1R72_AllForceNAK		BIT(7)
 	#define S1R72_EPrForceSTALL		BIT(6)
-	
-#define rcD_S1R72_BulkOnlyControl 				(0x0D8)
+
+#define rcD_S1R72_BulkOnlyControl				(0x0D8)
 
 #define rcD_S1R72_BulkOnlyConfig				(0x0D9)
 
@@ -220,7 +220,7 @@
 #define rcD_S1R72_EP0SETUP_7					(0x0E7)
 #define rcD_S1R72_EP0SETUP(index)				(0x0E0 + index)
 
-#define rcD_S1R72_USB_Address 					(0x0E8)
+#define rcD_S1R72_USB_Address					(0x0E8)
 #define rcD_S1R72_SETUP_Control					(0x0EA)
 	#define S1R72_ProtectEP0		BIT(0)
 
@@ -284,7 +284,7 @@
 #define rcD_S1R72_DescAdrs_L					(0x121)
 #define rcD_S1R72_DescSize_H					(0x122)
 #define rcD_S1R72_DescSize_L					(0x123)
-#define rcD_S1R72_EP_DMA_Ctrl 					(0x126)
+#define rcD_S1R72_EP_DMA_Ctrl					(0x126)
 
 #define rcD_S1R72_EnEP_IN_H						(0x128)
 #define rcD_S1R72_EnEP_IN_L						(0x129)
@@ -413,7 +413,7 @@
 /*****************************************
  * definitions of "enum"
  *****************************************/
-enum S1R72_GD_EP_NAME { 
+enum S1R72_GD_EP_NAME {
 	S1R72_GD_EP0	= 0,
 	S1R72_GD_EPA,
 	S1R72_GD_EPB,

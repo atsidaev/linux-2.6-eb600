@@ -143,7 +143,7 @@ S1R72XXX_USBC_QUE_DEBUG_TITLE dbg_name_tbl[S1R72_DEBUG_ITEM_MAX] = {
 	{"irq_sie ","ad","dat=","sof="},	/* 0x15 */
 	{"irq_stup","rt","req=","sof="},
 	{"irq_ep0 ","ad","dat=","sof="},
-	{"irq_epx ","ad","dat=","sof="},	
+	{"irq_epx ","ad","dat=","sof="},
 	{"irq_fpm ","ad","dat=","sof="},
 	{"chg_drv ","dt","dat=","sof="},	/* 0x1A */
 	{"chg_ep0 ","ep","sts=","sof="},
@@ -197,7 +197,7 @@ static const char proc_filename[] = "driver/udc";
 
 static int proc_udc_show(struct seq_file *s , void * a)
 {
-	S1R72XXX_USBC_DEV	*dev_temp = the_controller;	
+	S1R72XXX_USBC_DEV	*dev_temp = the_controller;
 	unsigned char		*buf;
 	unsigned int		i;
 	unsigned long		flags;
@@ -223,7 +223,7 @@ static int proc_udc_show(struct seq_file *s , void * a)
 	spin_lock_irqsave(&dev_temp->lock, flags);
 
 	buf =  dev_temp->base_addr;
-	seq_printf(s,"driver state = 0x%02x\n",dev_temp->usbcd_state);	
+	seq_printf(s,"driver state = 0x%02x\n",dev_temp->usbcd_state);
 	seq_printf(s,"Address: +00 +01 +02 +03 +04 +05 +06 +07");
 	seq_printf(s," +08 +09 +0A +0B +0C +0D +0E +0F\n");
 	for (i = 0 ; i < 0x190 ; i += 16){
@@ -264,7 +264,7 @@ static int proc_udc_show(struct seq_file *s , void * a)
 	} else {
 		i = 0;
 	}
-	
+
         while ( i != queue_dbg_counter ){
 		if (i > S1R72_DEBUG_TABLE_SIZE - 1){
 			i = 0;
@@ -320,7 +320,7 @@ inline static void remove_proc_file(void)
 /******************************************
  * definitions of "s1r72xxx_ep_ops"
  ******************************************/
-/** 
+/**
  * @struct s1r72xxx_ep_ops
  * @brief	USB Endpoint operation functions.
  */
@@ -372,7 +372,7 @@ static struct device_driver s1r72xxx_usbcd_driver = {
 };
 
 /* max packet size table (USB spec) */
-unsigned int packet_size_tbl[S1R72_SUPPORT_BUS_TYPE][S1R72_SUPPORT_TRN_TYPE] = 
+unsigned int packet_size_tbl[S1R72_SUPPORT_BUS_TYPE][S1R72_SUPPORT_TRN_TYPE] =
 {
 	{	S1R72_HS_CNT_MAX_PKT,
 		S1R72_HS_BLK_MAX_PKT,
@@ -524,7 +524,7 @@ static inline void usb_disconnected(S1R72XXX_USBC_DEV *usbc_dev)
 	 * - 3. Clear auto negotiation settings:
 	 */
 	rcD_RegWrite8(usbc_dev, rcD_S1R72_NegoControl, S1R72_REG_ALL_CLR);
-	
+
 	/**
 	 * - 4. Set bus termination settings to disconnected state:
 	 */
@@ -890,7 +890,7 @@ static inline void clear_epx_force_nak(S1R72XXX_USBC_DEV *usbc_dev,
  *				API(see functional specifications: 8.1.1.)
  * @param	*_ep;	endpoint structure that specifies the endpoint.
  * @param	*desc;	endpoint descriptor structure that includes endpoint
- *			 		specifications.
+ *					specifications.
  * @retval	return 0 when enabling ep complete successfull.
  *			another situation return error code.
  */
@@ -910,7 +910,7 @@ static int s1r72xxx_ep_enable(struct usb_ep *_ep,
 	/**
 	 * - 1. Check parameter:
 	 *  - param != NULL, _ep is not ep0, bEndpointAddress matches,
-	 *    FIFO size matches wMaxPacketSize, Transfer type, speed... 
+	 *    FIFO size matches wMaxPacketSize, Transfer type, speed...
 	 *  - in case of error, return -EINVAL, -ERANGE or -ESHUTDOWN.
 	 */
 	/* parameter check */
@@ -928,7 +928,7 @@ static int s1r72xxx_ep_enable(struct usb_ep *_ep,
 		return -EINVAL;
 	}
 	/* endpoint number, address pakcet size check */
-	if ( (ep->ep_subname == S1R72_GD_EP0) 
+	if ( (ep->ep_subname == S1R72_GD_EP0)
 			|| (ep->fifo_size < (le16_to_cpu(desc->wMaxPacketSize)
 				& S1R72_USB_MAX_PACKET)) ) {
 		DEBUG_MSG("%s, bad ep or descriptor\n", __FUNCTION__);
@@ -937,7 +937,7 @@ static int s1r72xxx_ep_enable(struct usb_ep *_ep,
 	/* endpoint transfer attributes check */
 	ep_attr = desc->bmAttributes & USB_ENDPOINT_XFERTYPE_MASK;
 	if ( ( ep_attr != USB_ENDPOINT_XFER_BULK)
-		&& ( ep_attr != USB_ENDPOINT_XFER_INT) 
+		&& ( ep_attr != USB_ENDPOINT_XFER_INT)
 		&& ( ep_attr != USB_ENDPOINT_XFER_ISOC) ) {
 		DEBUG_MSG("%s, %s type mismatch\n", __FUNCTION__, _ep->name);
 		return -EINVAL;
@@ -975,7 +975,7 @@ static int s1r72xxx_ep_enable(struct usb_ep *_ep,
 	ep->ep_desc = desc;
 	ep->ep.maxpacket = max_pkt;
 	ep->wMaxPacketSize = max_pkt;
-	
+
 	/**
 	 * - 3. Disable IRQ:
 	 *  - call spin_lock_irqsave.
@@ -1062,13 +1062,13 @@ static int s1r72xxx_ep_enable(struct usb_ep *_ep,
 	 */
 	ep->fifo_addup = FIFO_ADDUP_CLR;
 #endif
-	
+
 	/**
 	 * - 7. Interrupt enable:
 	 *  - enables interrupt registers on the usb device.
 	 *    DeviceIntEnb.D_BulkIntEnb, D_EPrIntEnb, D_EPaIntEnb.
 	 */
-	rcD_IntClr8(usbc_dev, rcD_S1R72_EPrIntStat, 
+	rcD_IntClr8(usbc_dev, rcD_S1R72_EPrIntStat,
 		S1R72_EPINT_ENB(ep->ep_subname));
 	rcD_RegSet8(usbc_dev, rcD_S1R72_EPrIntEnb,
 		S1R72_EPINT_ENB(ep->ep_subname));
@@ -1090,13 +1090,13 @@ static int s1r72xxx_ep_enable(struct usb_ep *_ep,
 		DEBUG_MSG("%s, set IN Tran ack \n", __FUNCTION__);
 	} else {
 		/* OUT endpoint */
-		rcD_IntClr8(usbc_dev, ep->reg.epx.EPxIntStat, 
+		rcD_IntClr8(usbc_dev, ep->reg.epx.EPxIntStat,
 			S1R72_OUT_ShortACK | S1R72_OUT_TranACK);
 		rcD_RegWrite8(usbc_dev, ep->reg.epx.EPxIntEnb,
 			S1R72_EnOUT_ShortACK | S1R72_EnOUT_TranACK);
 		DEBUG_MSG("%s, set OUT Tran ack \n", __FUNCTION__);
 	}
-	
+
 	/**
 	 * - 8. Enable IRQ:
 	 *  - call spin_unlock_irqrestore.
@@ -1144,7 +1144,7 @@ static int s1r72xxx_ep_disable(struct usb_ep *_ep)
 			_ep ? ep->ep.name : NULL);
 		return -EINVAL;
 	}
-	
+
 	/**
 	 * - 2. Disable IRQ:
 	 *  - call spin_lock_irqsave.
@@ -1252,7 +1252,7 @@ void s1r72xxx_ep_free_request(struct usb_ep *_ep, struct usb_request *_req)
 	DEBUG_MSG("%s, enter\n", __FUNCTION__);
 	/**
 	 * - 1. Check parameter:
-	 *  - usb_request != NULL. 
+	 *  - usb_request != NULL.
 	 *  - in case of error, return.
 	 */
 	if (_req == NULL) {
@@ -1289,14 +1289,14 @@ static int s1r72xxx_ep_queue(struct usb_ep *_ep, struct usb_request *_req,
 	S1R72XXX_USBC_REQ	*req;			/* USB request */
 	unsigned long		flags;			/* spin lock flag */
 	int					handle_ret;		/* handle_ep() return value */
-	
+
 	handle_ret = S1R72_QUEUE_REMAIN;
 	DEBUG_MSG("%s, enter\n", __FUNCTION__);
 
 	S1R72_USBC_INC_QUE_NO;
 	/**
 	 * - 1. Check parameter:
-	 *  - param != NULL, _ep is not ep0, bmAttributes, speed... 
+	 *  - param != NULL, _ep is not ep0, bmAttributes, speed...
 	 *  - in case of error, return -EINVAL, -ERANGE,
 	 *    -ESHUTDOWN or -EMSGSIZE.
 	 */
@@ -1319,12 +1319,12 @@ static int s1r72xxx_ep_queue(struct usb_ep *_ep, struct usb_request *_req,
 		|| (usbc_dev->gadget.speed == USB_SPEED_UNKNOWN) ){
 		return -ESHUTDOWN;
 	}
-	
+
 	S1R72_USBC_SET_QUE_NO(req);
 	s1r72xxx_queue_log(S1R72_DEBUG_EP_QUEUE, ep->ep_subname, _req->length);
 	s1r72xxx_queue_log(S1R72_DEBUG_EP_QUEUE_SN, ep->ep_subname,
 		req->queue_seq_no);
-	
+
 	/**
 	 * - 2. Disable IRQ:
 	 *  - call spin_lock_irqsave.
@@ -1358,14 +1358,14 @@ static int s1r72xxx_ep_queue(struct usb_ep *_ep, struct usb_request *_req,
 			if ( (ep->ep_state == S1R72_GD_EP_DIN) || (_req->length == 0) ){
 				/**
 				 * - 4.1.1. Handle IN ep0:
-	 			 *  - if state is DIN, already recieved data.
-	 			 *  - length 0 means status stage .
+				 *  - if state is DIN, already recieved data.
+				 *  - length 0 means status stage .
 				 */
 				handle_ret = handle_ep_in(ep, req);
 			} else if ( ep->ep_state == S1R72_GD_EP_DOUT ){
 				/**
 				 * - 4.1.2. Handle OUT ep0:
-	 			 *  - if state is DOUT, already recieved data.
+				 *  - if state is DOUT, already recieved data.
 				 */
 				handle_ret = handle_ep_out(ep, req);
 			} else {
@@ -1382,7 +1382,7 @@ static int s1r72xxx_ep_queue(struct usb_ep *_ep, struct usb_request *_req,
 			case USB_DIR_IN:
 				/**
 				 * - 4.2.1. Handle IN epx:
-	 			 *  - if DIR is IN, send data.
+				 *  - if DIR is IN, send data.
 				 */
 				if (ep->ep_state == S1R72_GD_EP_IDLE){
 					DEBUG_MSG("%s, DIN\n", __FUNCTION__);
@@ -1394,13 +1394,13 @@ static int s1r72xxx_ep_queue(struct usb_ep *_ep, struct usb_request *_req,
 				DEBUG_MSG("%s, DOUT\n", __FUNCTION__);
 				/**
 				 * - 4.2.2. Change ep state to IDLE:
-	 			 *  - if state is IDLE, no recieve data.
+				 *  - if state is IDLE, no recieve data.
 				 */
 				if (ep->ep_state == S1R72_GD_EP_IDLE){
 					change_epx_state(ep, S1R72_GD_EP_DOUT);
 				/**
 				 * - 4.2.3. Handle OUT epx:
-	 			 *  - if state is DOUT, already recieved data.
+				 *  - if state is DOUT, already recieved data.
 				 */
 				} else if (ep->ep_state == S1R72_GD_EP_DOUT) {
 					handle_ret = handle_ep_out(ep, req);
@@ -1409,7 +1409,7 @@ static int s1r72xxx_ep_queue(struct usb_ep *_ep, struct usb_request *_req,
 			}
 		}
 	}
-	
+
 	/**
 	 * - 5. Add this queue to queue list:
 	 *  - if this queue isn't completed above,
@@ -1602,7 +1602,7 @@ static int s1r72xxx_ep_set_halt(struct usb_ep *_ep, int value)
 		DEBUG_MSG("%s, clear halt\n", __FUNCTION__);
 		/**
 		 * - 3.2.1. Force clear 'STALL' to device:
-		 *  - set hardware register to turn nomal state. 
+		 *  - set hardware register to turn nomal state.
 		 *    D_EPxControl.ForceSTALL
 		 */
 		ep->is_stopped = S1R72_EP_ACTIVE;
@@ -1662,14 +1662,14 @@ static int s1r72xxx_ep_fifo_status(struct usb_ep *_ep)
 #if defined(CONFIG_USB_S1R72V27_GADGET) || defined(CONFIG_USB_S1R72V27_GADGET_MODULE)
 	unsigned short	dummy_read;
 #endif
-	
+
 	fifo_addr = 0;
 	join_addr = 0;
 	inout = 0;
-	
+
 	/**
 	 * - 1. Check parameter:
-	 *  - _ep is available... 
+	 *  - _ep is available...
 	 *  - in case of error, return -EINVAL.
 	 */
 	if (_ep == NULL) {
@@ -1747,7 +1747,7 @@ static void s1r72xxx_ep_fifo_flush(struct usb_ep *_ep)
 	S1R72XXX_USBC_EP	*ep;			/* USB endpoint informations */
 	/**
 	 * - 1. Check parameter:
-	 *  - param != NULL, _ep is available... 
+	 *  - param != NULL, _ep is available...
 	 *  - in case of error, return.
 	 */
 	if (_ep == NULL){
@@ -1796,7 +1796,7 @@ static int s1r72xxx_usbc_get_frame(struct usb_gadget *_gadget)
 	DEBUG_MSG("%s, enter\n", __FUNCTION__);
 	/**
 	 * - 1. Check parameter:
-	 *  - _gadget != NULL. 
+	 *  - _gadget != NULL.
 	 *  - in case of error, return -EINVAL.
 	 */
 	if ( _gadget == NULL ) {
@@ -1828,9 +1828,9 @@ static int s1r72xxx_usbc_get_frame(struct usb_gadget *_gadget)
 static int s1r72xxx_usbc_wakeup(struct usb_gadget *_gadget)
 {
 	S1R72XXX_USBC_DEV	*usbc_dev;			/* USB hardware informations */
-	unsigned char 		dummy;				/* dummy data */
+	unsigned char		dummy;				/* dummy data */
 	DEBUG_MSG("%s, enter\n", __FUNCTION__);
-	
+
 	/**
 	 * - 1. Check parameter:
 	 *  - _gadget != NULL.
@@ -1841,7 +1841,7 @@ static int s1r72xxx_usbc_wakeup(struct usb_gadget *_gadget)
 		return -EINVAL;
 	}
 	usbc_dev = container_of(_gadget, S1R72XXX_USBC_DEV, gadget);
-	
+
 	if ( usbc_dev->remote_wakeup_enb != S1R72_RT_WAKEUP_ENB) {
 		DEBUG_MSG("%s,remote wakeup is not enabled\n", __FUNCTION__);
 		return -EAGAIN;
@@ -1856,11 +1856,11 @@ static int s1r72xxx_usbc_wakeup(struct usb_gadget *_gadget)
 	 * - 2. Set remote wakeup flag:
 	 */
 	usbc_dev->remote_wakeup_prc = S1R72_RT_WAKEUP_PROC;
-	
+
 	/**
 	 * - 3. Set device interrupt:
 	 *  - Enable FinishedPM and clear NonJ interrupt.
-	 *  - USB device sends K signal to USB host, so NonJ interrupt 
+	 *  - USB device sends K signal to USB host, so NonJ interrupt
 	 *  -  is not needed.
 	 */
 	dummy = rcD_RegRead8(usbc_dev, rcMainIntEnb);	/* escape CPU_Cut */
@@ -1874,7 +1874,7 @@ static int s1r72xxx_usbc_wakeup(struct usb_gadget *_gadget)
 	 */
 	usbc_dev->usbcd_state = change_driver_state(usbc_dev,
 		usbc_dev->usbcd_state, S1R72_GD_API_RESUME);
-	
+
 	/**
 	 * - 5. Return:
 	 *  - return 0.
@@ -1930,7 +1930,7 @@ static int s1r72xxx_usbc_vbus_session(struct usb_gadget *_gadget, int value)
 {
 	S1R72XXX_USBC_DEV	*usbc_dev;		/* USB hardware informations */
 	unsigned long		flags;			/* spin lock flag */
-	
+
 	DEBUG_MSG("%s, enter\n", __FUNCTION__);
 	/**
 	 * - 1. Check parameter:
@@ -1954,13 +1954,13 @@ static int s1r72xxx_usbc_vbus_session(struct usb_gadget *_gadget, int value)
 	 *  - check VBUS state and change device state.
 	 */
 	usbc_irq_VBUS(usbc_dev);
-	
+
 	/**
 	 * - 4. Enable IRQ:
 	 *  - call spin_unlock_irqrestore.
 	 */
 	spin_unlock_irqrestore(&usbc_dev->lock, flags);
-	
+
 	/**
 	 * - 5. Return:
 	 *  - return 0.
@@ -2029,7 +2029,7 @@ static int s1r72xxx_usbc_pullup(struct usb_gadget *_gadget, int value)
 	 *  - calls usbc_pullup()
 	 */
 	usbc_pullup(value);
-	
+
 	/**
 	 * - 3. Return:
 	 *  - return 0.
@@ -2039,7 +2039,7 @@ static int s1r72xxx_usbc_pullup(struct usb_gadget *_gadget, int value)
 
 /* ========================================================================= */
 /**
- * @brief	- IOCTL function. this inplements functions that isn't 
+ * @brief	- IOCTL function. this inplements functions that isn't
  *			included other APIs.
  * @par		usage:
  *				API(see functional specifications: 8.2.7.)
@@ -2113,7 +2113,7 @@ static int __init s1r72xxx_usbc_probe(struct device *dev)
 		return -ENOMEM;
 	}
 	the_controller = usbc_dev;
-	
+
 	/**
 	 * - 3. Initialize the allocated memory:
 	 *  - 0 clear allocated memory using memset.
@@ -2160,7 +2160,7 @@ static int __init s1r72xxx_usbc_probe(struct device *dev)
 		DEBUG_MSG("ioremap error \n");
 		return -ENODEV;
 	}
-	
+
 	/**
 	 * - 6. Initialize hardware:
 	 *  - initialize hardware registers.
@@ -2181,7 +2181,7 @@ static int __init s1r72xxx_usbc_probe(struct device *dev)
 	usbc_ep_init(usbc_dev);
 	printk("%s: ioaddr: 0x%04X, Chip Rev: 0x%04X \n", driver_name,
 	(unsigned)usbc_dev->base_addr, rcD_RegRead8(usbc_dev, rcRevisionNum ));
-	
+
 	/**
 	 * - 7. Initialize device structure:
 	 *  - using device_initialize(), initialize the device structure.
@@ -2199,7 +2199,7 @@ static int __init s1r72xxx_usbc_probe(struct device *dev)
 	usbc_dev->usbcd_state
 		= change_driver_state(usbc_dev, usbc_dev->usbcd_state,
 			S1R72_GD_API_PROBE);
-	
+
 	/**
 	 * - 9. Initialize timer:
 	 */
@@ -2214,7 +2214,7 @@ static int __init s1r72xxx_usbc_probe(struct device *dev)
 	usbc_dev->vbus_timer.function = vbus_timer;
 	usbc_dev->vbus_timer.data = (unsigned long)usbc_dev;
 	usbc_dev->vbus_timer_state = S1R72_VBUS_TIMER_STOPPED;
-	
+
 	/**
 	 * - 10. Register IRQ handler to kernel:
 	 *  - register IRQ handler to kernel using request_irq() with SA_SHIRQ.
@@ -2277,7 +2277,7 @@ static int s1r72xxx_usbc_remove(struct device *dev)
 	usbc_dev->usbcd_state
 		= change_driver_state(usbc_dev, usbc_dev->usbcd_state,
 			S1R72_GD_API_REMOVE);
-	
+
 	/**
 	 * - 3. Unregister gadget driver from kernel:
 	 */
@@ -2310,12 +2310,12 @@ static int s1r72xxx_usbc_remove(struct device *dev)
 	 * - 5.2. Delete Wait J timer handler:
 	 */
 	del_timer_sync(&usbc_dev->wait_j_timer);
-	
+
 	/**
 	 * - 5.3. Delete Remote Wakeup timer handler:
 	 */
 	del_timer_sync(&usbc_dev->rm_wakeup_timer);
-	
+
 	/**
 	 * - 6. Enable IRQ:
 	 *  - call spin_unlock_irqrestore.
@@ -2343,7 +2343,7 @@ static int s1r72xxx_usbc_remove(struct device *dev)
  * @par		usage:
  *				API(see functional specifications: 8.3.3.)
  * @param	*dev;	device structure that specifies device drivers.
- * @retval	none	
+ * @retval	none
  */
 /* ========================================================================= */
 void s1r72xxx_usbc_shutdown(struct device *dev)
@@ -2351,10 +2351,10 @@ void s1r72xxx_usbc_shutdown(struct device *dev)
 	S1R72XXX_USBC_DEV	*usbc_dev;		/* USB hardware informations */
 	unsigned long		flags;			/* spin lock flag */
 
-	usbc_dev = the_controller; 
+	usbc_dev = the_controller;
 	DEBUG_MSG("%s, enter\n", __FUNCTION__);
 	s1r72xxx_queue_log(S1R72_DEBUG_SHUTDOWN, 0, 0);
-	
+
 	/**
 	 * - 1. Disable IRQ:
 	 *  - call spin_lock_irqsave.
@@ -2383,14 +2383,14 @@ void s1r72xxx_usbc_shutdown(struct device *dev)
 	 * - 2.3. Delete Remote Wakeup timer handler:
 	 */
 	del_timer_sync(&usbc_dev->rm_wakeup_timer);
-	
+
 	/**
 	 * - 3. Change state:
 	 */
 	usbc_dev->usbcd_state
 		= change_driver_state(usbc_dev, usbc_dev->usbcd_state,
 			S1R72_GD_API_SHUTDOWN);
-	
+
 	/**
 	 * - 4. Enable IRQ:
 	 *  - call spin_unlock_irqrestore.
@@ -2422,7 +2422,7 @@ static int s1r72xxx_usbc_suspend(struct device *dev, pm_message_t state)
 	unsigned int		pm_change_ct;	/* PM_Control change wait */
 	unsigned long		flags;			/* spin lock flag */
 	unsigned char		dummy;			/* dummy */
-	
+
 	usbc_dev = the_controller;
 	pm_change_ct = 0;
 	DEBUG_MSG("%s, enter\n", __FUNCTION__);
@@ -2448,7 +2448,7 @@ static int s1r72xxx_usbc_suspend(struct device *dev, pm_message_t state)
 	 *  - call spin_lock_irqsave.
 	 */
 	spin_lock_irqsave(&usbc_dev->lock, flags);
-	
+
 	/**
 	 * - 4. Change state:
 	 */
@@ -2524,10 +2524,10 @@ static int s1r72xxx_usbc_resume(struct device *dev)
 	unsigned long		flags;			/* spin lock flag */
 	unsigned int		retval;			/* return value */
 	unsigned char		dummy;			/* dummy */
-	
+
 	DEBUG_MSG("%s, enter\n", __FUNCTION__);
 	usbc_dev = the_controller;
-	
+
 	/**
 	 * - 1. Check parameter:
 	 *  - dev != NULL.
@@ -2541,7 +2541,7 @@ static int s1r72xxx_usbc_resume(struct device *dev)
 		DEBUG_MSG("%s, driver is not in suspend\n", __FUNCTION__);
 		return -EINVAL;
 	}
-	
+
 	/**
 	 * - 2. Disable IRQ:
 	 *  - call spin_lock_irqsave.
@@ -2558,7 +2558,7 @@ static int s1r72xxx_usbc_resume(struct device *dev)
 	if(usbc_dev->driver == NULL){
 		usbc_dev->usbcd_state = S1R72_GD_REGD;
 	}
-	
+
 	/**
 	 * - 4. Check previous state:
 	 *  - if previous state is USB suspend, only do changing state.
@@ -2603,7 +2603,7 @@ static int s1r72xxx_usbc_resume(struct device *dev)
 	 *  - call spin_unlock_irqrestore.
 	 */
 	spin_unlock_irqrestore(&usbc_dev->lock, flags);
-	
+
 	/**
 	 * - 6. Return:
 	 *  - return 0;
@@ -2623,14 +2623,14 @@ static void s1r72v_start_gpio_setting(void)
 	__REG(IMX_EIM_BASE + 0x20) = 0x00000900;
 	__REG(IMX_EIM_BASE + 0x24) = 0x54540d01;
 
-	imx_gpio_mode(GPIO_PORTC|GPIO_GIUS|GPIO_IN|GPIO_AIN|GPIO_AOUT|GPIO_BOUT|3); 
+	imx_gpio_mode(GPIO_PORTC|GPIO_GIUS|GPIO_IN|GPIO_AIN|GPIO_AOUT|GPIO_BOUT|3);
 	imx_gpio_mode(GPIO_PORTB|GPIO_GIUS|GPIO_IN|GPIO_AIN|GPIO_AOUT|GPIO_BOUT|19);   //USB_VBUS
 #ifdef CONFIG_EBOOK5_LED
 		imx_gpio_mode(GPIO_PORTB|GPIO_GIUS|GPIO_OUT | GPIO_DR |8);
 		usbtg_led(EBOOK5_LED_OFF);
 #endif /* CONFIG_EBOOK5_LED */
-	
-	imx_gpio_mode(GPIO_PORTA|GPIO_GIUS|GPIO_OUT|GPIO_DR|GPIO_PUEN|6);  //usb charge	
+
+	imx_gpio_mode(GPIO_PORTA|GPIO_GIUS|GPIO_OUT|GPIO_DR|GPIO_PUEN|6);  //usb charge
 
 //	vbus = dragonball_gpio_get_bit(USBD_S1R72_GPIO_PORT, pin);
 
@@ -2658,7 +2658,7 @@ static void s1r72v_start_gpio_setting(void)
 static int __init USBC_INIT(void)
 {
 	struct device_driver *pdev;
-	
+
 	DEBUG_MSG("%s, enter\n", __FUNCTION__);
 	/**
 	 * - 1. register a driver structure and return:
@@ -2677,7 +2677,7 @@ static int __init USBC_INIT(void)
 
 #ifdef CONFIG_MACH_SONY_PRS505
 	s1r72v_start_gpio_setting();
-#endif 
+#endif
 	return driver_register(&s1r72xxx_usbcd_driver);
 }
 
@@ -2717,7 +2717,7 @@ int usb_gadget_register_driver(struct usb_gadget_driver *driver)
 	int					retval;		/* returned value */
 
 	usbc_dev = the_controller;
-	
+
 	/**
 	 * - 1. Check parameter:
 	 *  - driver, driver->bind, driver->unbind, driver->disconnect
@@ -2728,7 +2728,7 @@ int usb_gadget_register_driver(struct usb_gadget_driver *driver)
 		printk("driver->bind = %p, driver->unbind = %p,"
 				"driver->disconnect = %p, driver->setup = %p\n", driver->bind, driver->unbind,
 				driver->disconnect, driver->setup);
-	if ( (driver == NULL) 
+	if ( (driver == NULL)
 		|| (driver->bind == NULL)
 		|| (driver->disconnect == NULL) || (driver->setup == NULL)){
 		DEBUG_MSG("%s, pointer error\n", __FUNCTION__);
@@ -2769,12 +2769,12 @@ int usb_gadget_register_driver(struct usb_gadget_driver *driver)
 	 * - 5. Change state to BOUND:
 	 */
 	usbc_dev->usbcd_state
-		= change_driver_state(usbc_dev, usbc_dev->usbcd_state, 
+		= change_driver_state(usbc_dev, usbc_dev->usbcd_state,
 			S1R72_GD_API_REGISTER);
-	
+
 	/**
 	 * - 6. Check VBUS level:
-	 *  - if VBUS = High, must start handshake. 
+	 *  - if VBUS = High, must start handshake.
 	 */
 	retval = usbc_irq_VBUS(usbc_dev);
 #if defined(CONFIG_USB_S1R72V17_GADGET)\
@@ -2793,7 +2793,7 @@ int usb_gadget_register_driver(struct usb_gadget_driver *driver)
 #endif
 		rcD_RegWrite8(usbc_dev, rcPM_Control_0, GoCPU_Cut);
 	}
-#endif	
+#endif
 	/**
 	 * - 7. Return:
 	 *  - return 0;
@@ -2821,7 +2821,7 @@ int usb_gadget_unregister_driver(struct usb_gadget_driver *driver)
 	s1r72xxx_queue_log(S1R72_DEBUG_UNREG_DRV, 0, 0);
 	usbc_dev = the_controller;
 	reg_value = S1R72_REG_ALL_CLR;
-	
+
 	/**
 	 * - 1. Check parameter:
 	 *  - s1r72xxx_usbc_dev != NULL, driver != NULL.
@@ -3022,7 +3022,7 @@ static irqreturn_t s1r72xxx_usbc_irq(int irq, void *_dev)
 	|| defined(CONFIG_USB_S1R72V17_GADGET_MODULE)\
 	|| defined(CONFIG_USB_S1R72V18_GADGET) || defined(CONFIG_USB_S1R72V18_GADGET_MODULE)\
 	|| defined(CONFIG_USB_S1R72V27_GADGET) || defined(CONFIG_USB_S1R72V27_GADGET_MODULE)
-	/** 
+	/**
 	 * - 3. Change device state to CPU_Cut:
 	 */
 	if ( (retval == S1R72_PM_CHANGE_TO_SLEEP)
@@ -3080,7 +3080,7 @@ static void s1r72xxx_usbc_release(struct device *dev)
 /**
  * @brief	- process VBUS_Changed interrupt and set timer.
  * @par		usage:
- * 				internal use only.
+ *				internal use only.
  * @param	*usbc_dev;	device informations structure.
  * @retval	return 0 operation completed successfully.
  *			in case of error, return error code.
@@ -3148,7 +3148,7 @@ static int usbc_irq_VBUS_CHG(S1R72XXX_USBC_DEV *usbc_dev)
  *				internal use only.
  * @param	*usbc_dev;	device informations structure .
  * @retval	return 0 operation complete successfully.
- * 					or status of _PM_CHANGE_TO_SLEEP.
+ *					or status of _PM_CHANGE_TO_SLEEP.
  */
 /* ========================================================================= */
 static int usbc_irq_VBUS(S1R72XXX_USBC_DEV *usbc_dev)
@@ -3157,15 +3157,15 @@ static int usbc_irq_VBUS(S1R72XXX_USBC_DEV *usbc_dev)
 	unsigned char	retval;		/* return value */
 	unsigned int	timeout_ct;
 	timeout_ct = 0;
-	
+
 	DEBUG_MSG("%s, enter\n", __FUNCTION__);
 	retval = 0;
-	
-	/** 
+
+	/**
 	 * - 1 Check current VBUS state:
 	 *  - process 1.1. when VBUS state = High, another process 2.1.
 	 */
-	s1r72xxx_queue_log(S1R72_DEBUG_IRQ_VBUS,rcD_USB_Status , 
+	s1r72xxx_queue_log(S1R72_DEBUG_IRQ_VBUS,rcD_USB_Status ,
 		rcD_RegRead8(usbc_dev, rcD_USB_Status));
 
 	if ( (rcD_RegRead8(usbc_dev, rcD_USB_Status) & S1R72_VBUS)
@@ -3184,7 +3184,7 @@ static int usbc_irq_VBUS(S1R72XXX_USBC_DEV *usbc_dev)
 		usbc_dev->usbcd_state
 			= change_driver_state(usbc_dev, usbc_dev->usbcd_state,
 				S1R72_GD_H_W_VBUS_H);
-	
+
 	} else {
 		/**
 		 * - 2.1. Disconnect from USB bus:
@@ -3193,7 +3193,7 @@ static int usbc_irq_VBUS(S1R72XXX_USBC_DEV *usbc_dev)
 		 */
 		del_timer_sync(&usbc_dev->wait_j_timer);
 		rcD_RegClear8(usbc_dev, rcMainIntEnb, FinishedPM);
-		
+
 		if( (rcD_RegRead8(usbc_dev, rcPM_Control_0) & PM_State_Mask)
 				!= S1R72_PM_State_ACT_DEVICE){
 			rcD_IntClr8(usbc_dev, rcMainIntStat, FinishedPM);
@@ -3208,18 +3208,18 @@ static int usbc_irq_VBUS(S1R72XXX_USBC_DEV *usbc_dev)
 			}
 			rcD_IntClr8(usbc_dev, rcMainIntStat, FinishedPM);
 		}
-		
+
 		stop_activity(usbc_dev);
 		usb_disconnected(usbc_dev);
 		usbc_ep_init(usbc_dev);
 		rcD_RegWrite8(usbc_dev, rcD_S1R72_USB_Test, S1R72_REG_ALL_CLR );
 		usbc_dev->previous_usbcd_state = S1R72_GD_DONT_CHG;
-		for (ep_ct = S1R72_GD_EP0 ; ep_ct < S1R72_MAX_ENDPOINT 
+		for (ep_ct = S1R72_GD_EP0 ; ep_ct < S1R72_MAX_ENDPOINT
 			; ep_ct++){
 			S1R72_AREAxJOIN_DIS(usbc_dev, ep_ct);
 		}
 		rcD_RegSet8(usbc_dev, rcMainIntEnb, FinishedPM);
-		
+
 		/**
 		 * - 2.2. Change state:
 		 *  - change driver state, and changes hardware to SLEEP.
@@ -3231,13 +3231,13 @@ static int usbc_irq_VBUS(S1R72XXX_USBC_DEV *usbc_dev)
 		DEBUG_MSG("%s, VBUS = L\n", __FUNCTION__);
 	}
 
-	/** 
+	/**
 	 * - 3. Clear interrupt source:
 	 *  - to clear interrupt, write '1' to VBUS_Changed.
 	 */
 	DEBUG_MSG("%s, clear irq\n", __FUNCTION__);
 	rcD_IntClr8(usbc_dev, rcDeviceIntStat, D_VBUS_Changed);
-	
+
 	/**
 	 * - 4. Return:
 	 *  - return 0 or _PM_CHANGE_TO_SLEEP;
@@ -3264,11 +3264,11 @@ static int usbc_irq_SIE(S1R72XXX_USBC_DEV *usbc_dev)
 	unsigned char	new_line_state;	/* line_state */
 	unsigned char	old_line_state;	/* line_state */
 	timeout_ct = 0;
-	
+
 	int_src = S1R72_IRQ_DONE;
 	DEBUG_MSG("%s, enter\n", __FUNCTION__);
-	
-	/** 
+
+	/**
 	 * - 1. Check current SIE state:
 	 *  - process 1.1. to 6.1 according to D_SIE_IntStat state.
 	 */
@@ -3302,7 +3302,7 @@ static int usbc_irq_SIE(S1R72XXX_USBC_DEV *usbc_dev)
 			}
 			timeout_ct++;
 		}
-		
+
 		/**
 		 * - 1.2. Clear NonJ interrupt:
 		 */
@@ -3319,7 +3319,7 @@ static int usbc_irq_SIE(S1R72XXX_USBC_DEV *usbc_dev)
 			/* return from USB suspend */
 			rcD_RegClear8(usbc_dev, rcD_S1R72_NegoControl, S1R72_InSUSPEND);
 		}
-		
+
 		/**
 		 * - 1.4. Report resume to gadget driver:
 		 */
@@ -3338,13 +3338,13 @@ static int usbc_irq_SIE(S1R72XXX_USBC_DEV *usbc_dev)
 		break;
 
 	case S1R72_DetectRESET:
-		/** 
+		/**
 		 * - 2.1. Stop all activity:
 		 *  - flush all request and report disconnect to gadget driver.
 		 */
 		DEBUG_MSG("%s, DetectReset irq\n", __FUNCTION__);
-		
-		/** 
+
+		/**
 		 * - 2.2. Clear interrupt:
 		 */
 		rcD_IntClr8(usbc_dev, rcD_S1R72_SIE_IntStat, int_src);
@@ -3358,7 +3358,7 @@ static int usbc_irq_SIE(S1R72XXX_USBC_DEV *usbc_dev)
 				S1R72_GD_H_W_RESET);
 		break;
 
-	case S1R72_DetectSUSPEND:	
+	case S1R72_DetectSUSPEND:
 		/**
 		 * - 3.1. Report suspend to gadget driver:
 		 */
@@ -3368,7 +3368,7 @@ static int usbc_irq_SIE(S1R72XXX_USBC_DEV *usbc_dev)
 			usbc_dev->driver->suspend(&usbc_dev->gadget);
 		}
 
-		/** 
+		/**
 		 * - 3.2. Set interrupt:
 		 *  - set NonJ interrupt to response resume request, clear interrupt.
 		 */
@@ -3389,28 +3389,28 @@ static int usbc_irq_SIE(S1R72XXX_USBC_DEV *usbc_dev)
 		break;
 
 	case S1R72_ChirpCmp:
-		/** 
+		/**
 		 * - 4.1. Clear interrupt:
 		 */
 		DEBUG_MSG("%s, ChirpCmp irq\n", __FUNCTION__);
 		rcD_IntClr8(usbc_dev, rcD_S1R72_SIE_IntStat, int_src);
 
-		/** 
+		/**
 		 * - 4.2. Delete bus status check timer:
 		 */
 		del_timer(&usbc_dev->wait_j_timer);
-		
+
 		/**
 		 * - 4.3. Change state:
 		 *  - change driver state.
 		 */
 		usbc_dev->usbcd_state
-			= change_driver_state(usbc_dev, usbc_dev->usbcd_state, 
+			= change_driver_state(usbc_dev, usbc_dev->usbcd_state,
 				S1R72_GD_H_W_CHIRP);
-		
+
 		/**
 		 * - 4.4. Check bus speed:
-		 *  - check bus speed and set gadget.speed value to report this 
+		 *  - check bus speed and set gadget.speed value to report this
 		 *  - information to gadget driver.
 		 */
 		if ((rcD_RegRead8(usbc_dev, rcD_USB_Status) & S1R72_FSxHS)
@@ -3426,7 +3426,7 @@ static int usbc_irq_SIE(S1R72XXX_USBC_DEV *usbc_dev)
 		break;
 
 	case S1R72_RestoreCmp:
-		/** 
+		/**
 		 * - 5.1. Clear interrupt:
 		 */
 		DEBUG_MSG("%s, RestoreCmp irq\n", __FUNCTION__);
@@ -3441,7 +3441,7 @@ static int usbc_irq_SIE(S1R72XXX_USBC_DEV *usbc_dev)
 		break;
 
 	case S1R72_SetAddressCmp:
-		/** 
+		/**
 		 * - 6.1. Clear interrupt:
 		 */
 		rcD_IntClr8(usbc_dev, rcD_S1R72_SIE_IntStat, int_src);
@@ -3459,7 +3459,7 @@ static int usbc_irq_SIE(S1R72XXX_USBC_DEV *usbc_dev)
 				S1R72_GD_H_W_ADDRESS);
 		change_ep0_state(&usbc_dev->usbc_ep[S1R72_GD_EP0], S1R72_GD_EP_IDLE);
 		break;
-		
+
 	default:
 		/* This should not occur */
 		DEBUG_MSG("%s, interrupt source is none %x\n", __FUNCTION__, sie_int);
@@ -3487,7 +3487,7 @@ static int usbc_irq_SIE(S1R72XXX_USBC_DEV *usbc_dev)
 /* ========================================================================= */
 static int usbc_irq_Bulk(S1R72XXX_USBC_DEV *usbc_dev)
 {
-	/** 
+	/**
 	 * - 1. Do nothing:
 	 *  - this routine is made for bulk-only mode support.
 	 *    but I don't use this, so no process here.
@@ -3539,9 +3539,9 @@ static int usbc_irq_RcvEP0SETUP(S1R72XXX_USBC_DEV *usbc_dev)
 	term = S1R72_OpMode_DisableBitStuffing;
 	ep0 = &usbc_dev->usbc_ep[S1R72_GD_EP0];
 	epx = NULL;
-	
+
 	DEBUG_MSG("%s, enter\n", __FUNCTION__);
-	/** 
+	/**
 	 * - 1. Clear interrupt:
 	 */
 	if ( (rcD_RegRead8(usbc_dev, rcDeviceIntStat) & D_RcvEP0SETUP)
@@ -3559,7 +3559,7 @@ static int usbc_irq_RcvEP0SETUP(S1R72XXX_USBC_DEV *usbc_dev)
 		return -ENODEV;
 	}
 
-	/** 
+	/**
 	 * - 3. Read setup data from ep0 FIFO:
 	 *  - read D_EP0SETUP_[0..7].
 	 */
@@ -3587,8 +3587,8 @@ static int usbc_irq_RcvEP0SETUP(S1R72XXX_USBC_DEV *usbc_dev)
 	 */
 	ep0->fifo_addup = FIFO_ADDUP_CLR;
 #endif
-	
-	/** 
+
+	/**
 	 * - 4. Change ep0 state:
 	 *  - changes ep0 state to S1R72_GD_EP_DIN or S1R72_GD_EP_DOUT.
 	 */
@@ -3600,15 +3600,15 @@ static int usbc_irq_RcvEP0SETUP(S1R72XXX_USBC_DEV *usbc_dev)
 
 	/**
 	 * - 5. Check bmRequestType:
-	 *  - check bmRequestType. if bmRequestType is USB_REQ_CLEAR_FEATURE, 
-	 *    USB_REQ_SET_FEATURE or USB_REQ_GET_STATUS, then process here. 
+	 *  - check bmRequestType. if bmRequestType is USB_REQ_CLEAR_FEATURE,
+	 *    USB_REQ_SET_FEATURE or USB_REQ_GET_STATUS, then process here.
 	 *    other bmRequestType is processed gadget driver.
 	 */
 	recip_req_type = u.r.bRequestType;
 	recip_req = u.r.bRequest;
 	recip_ind_type = u.r.wIndex;
 	ep_num = u.r.wIndex & USB_ENDPOINT_NUMBER_MASK;
-	
+
 	DEBUG_MSG("%s, bRequestType=0x%02x\n", __FUNCTION__, recip_req_type);
 	s1r72xxx_queue_log(S1R72_DEBUG_IRQ_RCVEP0, u.r.bRequestType, u.r.bRequest);
 
@@ -3618,12 +3618,12 @@ static int usbc_irq_RcvEP0SETUP(S1R72XXX_USBC_DEV *usbc_dev)
 
 	if( (recip_req_type & USB_TYPE_MASK) == USB_TYPE_STANDARD){
 		switch(recip_req) {
-		/** 
+		/**
 		 * - 5.1. GET_STATUS:
 		 */
 		case USB_REQ_GET_STATUS:
 			DEBUG_MSG("%s, USB_REQ_GET_STATUS\n", __FUNCTION__);
-			/** 
+			/**
 			 * - 5.1.1. Set direction IN:
 			 *  - Set EP0Join to write, EP0Control IN, clear FIFO.
 			 */
@@ -3633,7 +3633,7 @@ static int usbc_irq_RcvEP0SETUP(S1R72XXX_USBC_DEV *usbc_dev)
 			rcD_RegWrite8(usbc_dev, ep0->reg.ep0.EP0Control,
 				S1R72_EP0INxOUT_IN);
 			S1R72_EP0FIFO_CLR(usbc_dev);
-	
+
 #if defined(CONFIG_USB_S1R72V18_GADGET) || defined(CONFIG_USB_S1R72V18_GADGET_MODULE)\
 	|| defined(CONFIG_USB_S1R72V27_GADGET) || defined(CONFIG_USB_S1R72V27_GADGET_MODULE)
 	/**
@@ -3641,8 +3641,8 @@ static int usbc_irq_RcvEP0SETUP(S1R72XXX_USBC_DEV *usbc_dev)
 	 */
 	ep0->fifo_addup = FIFO_ADDUP_CLR;
 #endif
-			
-			/** 
+
+			/**
 			 * - 5.1.2. Set data to FIFO:
 			 *  - Set current status to FIFO and set EnShortPkt bit
 			 *    at EP0ControlIN.
@@ -3688,7 +3688,7 @@ static int usbc_irq_RcvEP0SETUP(S1R72XXX_USBC_DEV *usbc_dev)
 			S1R72_EPJOINCPU_CLR(usbc_dev);
 			break;
 
-		/** 
+		/**
 		 * - 5.2. CLEAR_FEATURE:
 		 */
 		case USB_REQ_CLEAR_FEATURE:
@@ -3697,7 +3697,7 @@ static int usbc_irq_RcvEP0SETUP(S1R72XXX_USBC_DEV *usbc_dev)
 			case USB_ENDPOINT_HALT:
 				/**
 				 * - 5.2.1. Set endpoint stall:
-				 *  - set ForceSTALL bit at EPxControl. 
+				 *  - set ForceSTALL bit at EPxControl.
 				 */
 				DEBUG_MSG("%s, USB_ENDPOINT_HALT\n", __FUNCTION__);
 				if ( (ep_num != S1R72_GD_EP0)
@@ -3715,7 +3715,7 @@ static int usbc_irq_RcvEP0SETUP(S1R72XXX_USBC_DEV *usbc_dev)
 					retval = -EINVAL;
 				}
 				break;
-				
+
 			case USB_DEVICE_REMOTE_WAKEUP:
 				/**
 				 * - 5.2.2. Clear remote wakeup enable flag:
@@ -3723,7 +3723,7 @@ static int usbc_irq_RcvEP0SETUP(S1R72XXX_USBC_DEV *usbc_dev)
 				change_ep0_state(ep0, S1R72_GD_EP_SIN);
 				usbc_dev->remote_wakeup_enb = S1R72_RT_WAKEUP_DIS;
 				break;
-				
+
 			default:
 				/* This should not occur */
 				DEBUG_MSG("%s, USB_REQ_CLEAR_FEATURE error\n", __FUNCTION__);
@@ -3732,7 +3732,7 @@ static int usbc_irq_RcvEP0SETUP(S1R72XXX_USBC_DEV *usbc_dev)
 			}
 			break;
 
-		/** 
+		/**
 		 * - 5.3. SET_FEATURE:
 		 */
 		case USB_REQ_SET_FEATURE:
@@ -3741,7 +3741,7 @@ static int usbc_irq_RcvEP0SETUP(S1R72XXX_USBC_DEV *usbc_dev)
 			case USB_ENDPOINT_HALT:
 				/**
 				 * - 5.3.1. Clear endpoint stall:
-				 *  - clear ForceSTALL bit at EPxControl. 
+				 *  - clear ForceSTALL bit at EPxControl.
 				 */
 				DEBUG_MSG("%s, USB_ENDPOINT_HALT\n", __FUNCTION__);
 				if ( (ep_num != S1R72_GD_EP0)
@@ -3757,7 +3757,7 @@ static int usbc_irq_RcvEP0SETUP(S1R72XXX_USBC_DEV *usbc_dev)
 					retval = -EINVAL;
 				}
 				break;
-				
+
 			case USB_DEVICE_TEST_MODE:
 				/**
 				 * - 5.3.2. Set test mode:
@@ -3767,7 +3767,7 @@ static int usbc_irq_RcvEP0SETUP(S1R72XXX_USBC_DEV *usbc_dev)
 				rcD_RegSet8(usbc_dev, ep0->reg.ep0.EP0Control,
 					S1R72_EP0INxOUT_IN);
 				S1R72_EP0FIFO_CLR(usbc_dev);
-				
+
 #if defined(CONFIG_USB_S1R72V18_GADGET) || defined(CONFIG_USB_S1R72V18_GADGET_MODULE)\
 	|| defined(CONFIG_USB_S1R72V27_GADGET) || defined(CONFIG_USB_S1R72V27_GADGET_MODULE)
 	/**
@@ -3775,7 +3775,7 @@ static int usbc_irq_RcvEP0SETUP(S1R72XXX_USBC_DEV *usbc_dev)
 	 */
 	ep0->fifo_addup = FIFO_ADDUP_CLR;
 #endif
-				
+
 				send_ep0_short_packet(usbc_dev, ep0);
 
 				/**
@@ -3793,10 +3793,10 @@ static int usbc_irq_RcvEP0SETUP(S1R72XXX_USBC_DEV *usbc_dev)
 				case TEST_MODE_J:
 					/**
 					 * - 5.3.3.1. TEST_MODE_J:
-					 *  - set FS mode to XcvrControl and set Test J. 
+					 *  - set FS mode to XcvrControl and set Test J.
 					 */
 					DEBUG_MSG("%s, TEST_MODE_J\n", __FUNCTION__);
-					term =S1R72_OpMode_DisableBitStuffing; 
+					term =S1R72_OpMode_DisableBitStuffing;
 					if( (rcD_RegRead8(usbc_dev, rcD_USB_Status) & S1R72_FSxHS)
 						== S1R72_Status_FS){
 						term |= S1R72_TermSelect | S1R72_XcvrSelect;
@@ -3804,14 +3804,14 @@ static int usbc_irq_RcvEP0SETUP(S1R72XXX_USBC_DEV *usbc_dev)
 					rcD_RegWrite8(usbc_dev, rcD_S1R72_XcvrControl, term);
 					rcD_RegSet8(usbc_dev, rcD_S1R72_USB_Test, S1R72_Test_J);
 					break;
-					
+
 				case TEST_MODE_K:
 					/**
 					 * - 5.3.3.2. TEST_MODE_K:
-					 *  - set FS mode to XcvrControl and set Test K. 
+					 *  - set FS mode to XcvrControl and set Test K.
 					 */
 					DEBUG_MSG("%s, TEST_MODE_K\n", __FUNCTION__);
-					term =S1R72_OpMode_DisableBitStuffing; 
+					term =S1R72_OpMode_DisableBitStuffing;
 					if( (rcD_RegRead8(usbc_dev, rcD_USB_Status) & S1R72_FSxHS)
 						== S1R72_Status_FS){
 						term |= S1R72_TermSelect | S1R72_XcvrSelect;
@@ -3819,11 +3819,11 @@ static int usbc_irq_RcvEP0SETUP(S1R72XXX_USBC_DEV *usbc_dev)
 					rcD_RegWrite8(usbc_dev, rcD_S1R72_XcvrControl, term);
 					rcD_RegSet8(usbc_dev, rcD_S1R72_USB_Test, S1R72_Test_K);
 					break;
-					
+
 				case TEST_MODE_SE0_NAK:
 					/**
 					 * - 5.3.3.3. TEST_MODE_SE0_NAK:
-					 *  - set Test SE0 NAK. 
+					 *  - set Test SE0 NAK.
 					 */
 					DEBUG_MSG("%s, TEST_MODE_SE0_NAK\n", __FUNCTION__);
 					rcD_RegClear8(usbc_dev, rcD_S1R72_XcvrControl,
@@ -3831,7 +3831,7 @@ static int usbc_irq_RcvEP0SETUP(S1R72XXX_USBC_DEV *usbc_dev)
 					rcD_RegSet8(usbc_dev, rcD_S1R72_USB_Test,
 						S1R72_Test_SE0_NAK);
 					break;
-					
+
 				case TEST_MODE_PACKET:
 					/**
 					 * - 5.3.3.4.1. TEST_MODE_PACKET:
@@ -3867,7 +3867,7 @@ static int usbc_irq_RcvEP0SETUP(S1R72XXX_USBC_DEV *usbc_dev)
 					rsD_RegWrite16(usbc_dev,
 						usbc_dev->usbc_ep[S1R72_GD_EPA].reg.epx.EPxMaxSize,
 						TEST_MODE_EP_PACKET_SIZE);
-	
+
 #if defined(CONFIG_USB_S1R72V17_GADGET)\
 	|| defined(CONFIG_USB_S1R72V17_GADGET_MODULE)\
 	|| defined(CONFIG_USB_S1R72V18_GADGET) || defined(CONFIG_USB_S1R72V18_GADGET_MODULE)\
@@ -3877,7 +3877,7 @@ static int usbc_irq_RcvEP0SETUP(S1R72XXX_USBC_DEV *usbc_dev)
 						S1R72_ClrAREA_ALL);
 #endif
 					/* clear join settings */
-					for (ep_ct = S1R72_GD_EP0 ; ep_ct < S1R72_MAX_ENDPOINT 
+					for (ep_ct = S1R72_GD_EP0 ; ep_ct < S1R72_MAX_ENDPOINT
 						; ep_ct++){
 						S1R72_AREAxJOIN_DIS(usbc_dev, ep_ct);
 
@@ -3886,16 +3886,16 @@ static int usbc_irq_RcvEP0SETUP(S1R72XXX_USBC_DEV *usbc_dev)
 						usbc_dev->usbc_ep[ep_ct].fifo_addup = FIFO_ADDUP_CLR;
 #endif
 					}
-					
+
 					/* set AREA Join_1 */
 					S1R72_AREAxJOIN_ENB(usbc_dev, S1R72_GD_EPA);
 
 					/* set join register */
 					S1R72_EPJOINCPU_CLR(usbc_dev);
 					rcD_RegSet8(usbc_dev,
-						usbc_dev->usbc_ep[S1R72_GD_EPA].reg.epx.EPxJoin, 
+						usbc_dev->usbc_ep[S1R72_GD_EPA].reg.epx.EPxJoin,
 						S1R72_JoinCPU_Wr);
-	
+
 					/**
 					 * - 5.3.3.4.3. Write test packet to FIFO:
 					 */
@@ -3941,7 +3941,7 @@ static int usbc_irq_RcvEP0SETUP(S1R72XXX_USBC_DEV *usbc_dev)
 							rcD_RegRead8(usbc_dev, rcCacheRemain));
 					}
 #endif
-					
+
 					/**
 					 * - 5.3.3.4.3.4. renew FIFO addup:
 					 */
@@ -3953,7 +3953,7 @@ static int usbc_irq_RcvEP0SETUP(S1R72XXX_USBC_DEV *usbc_dev)
 #endif
 #endif	/* _16BIT_FIX */
 					S1R72_EPJOINCPU_CLR(usbc_dev);
-				
+
 					/**
 					 * - 5.3.3.4.5. Clear IN_TranErr:
 					 */
@@ -3987,7 +3987,7 @@ static int usbc_irq_RcvEP0SETUP(S1R72XXX_USBC_DEV *usbc_dev)
 				 */
 				rcD_RegSet8(usbc_dev, rcD_S1R72_USB_Test, S1R72_EnHS_Test );
 				break;
-				
+
 			case USB_DEVICE_REMOTE_WAKEUP:
 				/**
 				 * - 5.3.4. Set remote wakeup enable flag:
@@ -3995,7 +3995,7 @@ static int usbc_irq_RcvEP0SETUP(S1R72XXX_USBC_DEV *usbc_dev)
 				change_ep0_state(ep0, S1R72_GD_EP_SIN);
 				usbc_dev->remote_wakeup_enb = S1R72_RT_WAKEUP_ENB;
 				break;
-			
+
 			default:
 				/* This should not occur */
 				DEBUG_MSG("%s, USB_REQ_SET_FEATURE error\n", __FUNCTION__);
@@ -4007,9 +4007,9 @@ static int usbc_irq_RcvEP0SETUP(S1R72XXX_USBC_DEV *usbc_dev)
 		default :
 			/**
 			 * - 5.4. bmRequestType != above request:
-			 *  - set setup data to gadget driver calling by setup() at 
+			 *  - set setup data to gadget driver calling by setup() at
 			 *    gadget driver. in case of error, set hardware ForceSTALL.
-			 */	
+			 */
 			DEBUG_MSG("%s, call gadget driver setup=0x%02x\n", __FUNCTION__,
 				recip_req_type);
 			retval = usbc_dev->driver->setup(&usbc_dev->gadget, &u.r);
@@ -4022,7 +4022,7 @@ static int usbc_irq_RcvEP0SETUP(S1R72XXX_USBC_DEV *usbc_dev)
 
 	/**
 	 * - 6. Set STALL :
-	 *  - if returned value is error code, set STALL endpoint 0. 
+	 *  - if returned value is error code, set STALL endpoint 0.
 	 */
 	if ( retval < S1R72_RET_OK ) {
 		/* force stall ep0 */
@@ -4065,7 +4065,7 @@ static int usbc_irq_EP0(S1R72XXX_USBC_DEV *usbc_dev)
 	ep = &usbc_dev->usbc_ep[S1R72_GD_EP0];
 	ep->intenb = S1R72_IRQ_NOT_OCCURED;
 	inout_flag = S1R72_IN_TranACK;
-	
+
 	DEBUG_MSG("%s, enter\n", __FUNCTION__);
 	/**
 	 * - 1. Check current EP0Int state:
@@ -4144,7 +4144,7 @@ static int usbc_irq_EP0(S1R72XXX_USBC_DEV *usbc_dev)
 		ep0_int = S1R72_IN_TranACK;
 		inout_flag = S1R72_IN_TranACK;
 
-		/** 
+		/**
 		 * - 1.1.4. Clear interrupt source:
 		 *  - to clear interrupt, write '1' to register.
 		 */
@@ -4167,7 +4167,7 @@ static int usbc_irq_EP0(S1R72XXX_USBC_DEV *usbc_dev)
 			 */
 			change_ep0_state(ep, S1R72_GD_EP_IDLE);
 
-			/** 
+			/**
 			 * - 1.2.1.2. Clear interrupt source:
 			 *  - to clear interrupt, write '1' to register.
 			 */
@@ -4180,7 +4180,7 @@ static int usbc_irq_EP0(S1R72XXX_USBC_DEV *usbc_dev)
 		} else {
 			/**
 			 * - 1.2.2.1. Get recieved data size and set flags:
-			 *  - get data size of recieved data and set intenb flag to 
+			 *  - get data size of recieved data and set intenb flag to
 			 *  - call handle_ep_out.
 			 *  - if data is short packet, set short packet flag.
 			 */
@@ -4198,7 +4198,7 @@ static int usbc_irq_EP0(S1R72XXX_USBC_DEV *usbc_dev)
 			ep->fifo_data = (unsigned int)rsD_RegRead16(usbc_dev,
 				rsFIFO_RdRemain) & FIFO_RdRemain;
 
-			/** 
+			/**
 			 * - 1.2.2.2. Clear interrupt source:
 			 *  - to clear interrupt, write '1' to register.
 			 */
@@ -4216,7 +4216,7 @@ static int usbc_irq_EP0(S1R72XXX_USBC_DEV *usbc_dev)
 		}
 	}
 
-	/** 
+	/**
 	 * - 2. Read/Write data from/to FIFO:
 	 *  - Read data from FIFO by handle_ep_in().
 	 *  - Write data to FIFO by handle_ep_out().
@@ -4269,7 +4269,7 @@ static int usbc_irq_EP(S1R72XXX_USBC_DEV *usbc_dev)
 	up_low_mask = 0xFF;
 	shift_bit = 0x00;
 	reg_value = 0x00;
-	
+
 	/**
 	 * - 1. Check current EPrInt state:
 	 *  - read D_EPrIntStat call handle_ep() that is set parameter related to
@@ -4281,7 +4281,7 @@ static int usbc_irq_EP(S1R72XXX_USBC_DEV *usbc_dev)
 
 	while ((epr_int) != S1R72_IRQ_NONE){
 		DEBUG_MSG("%s, EPrIntStat=0x%02x\n", __FUNCTION__, epr_int);
-		/** 
+		/**
 		 * - 1.1. Search interrupt source:
 		 */
 		for(ep_num = S1R72_GD_EPA ; ep_num < S1R72_MAX_ENDPOINT ; ep_num++ ){
@@ -4333,7 +4333,7 @@ static int usbc_irq_EP(S1R72XXX_USBC_DEV *usbc_dev)
 					/**
 					 * - 1.2.2.1. Check data remain in reqest queue:
 					 *  - if all data in one queue is send to host,
-					 *    complete transfer. after that request queue 
+					 *    complete transfer. after that request queue
 					 *    is not empty, send data to host.
 					 *  - if data remain in one queue, send data to host.
 					 */
@@ -4377,7 +4377,7 @@ static int usbc_irq_EP(S1R72XXX_USBC_DEV *usbc_dev)
 		default:
 			/**
 			 * - 1.3.1. Clear interrupt and set flag:
-	 		 */
+			 */
 
 			set_epx_force_nak(usbc_dev, epx);
 			epx_int = rcD_RegRead8(usbc_dev, epx->reg.epx.EPxIntStat);
@@ -4423,7 +4423,7 @@ static int usbc_irq_EP(S1R72XXX_USBC_DEV *usbc_dev)
 			rcD_IntClr8(usbc_dev, epx->reg.epx.EPxIntStat, epx_int);
 
 			s1r72xxx_queue_log(S1R72_DEBUG_IRQ_EP, ep_num, epx->fifo_data);
-			
+
 			if( epx->last_is_short == S1R72_IRQ_IS_NOT_SHORT){
 				clear_epx_force_nak(usbc_dev, epx);
 			}
@@ -4431,24 +4431,24 @@ static int usbc_irq_EP(S1R72XXX_USBC_DEV *usbc_dev)
 			epx->intenb = S1R72_IRQ_OCCURED;
 			DEBUG_MSG("%s, OUT\n", __FUNCTION__);
 
-			/** 
+			/**
 			 * - 1.3.3. Read data from FIFO:
-	 		 *  - call handle_ep_out to read data from FIFO.
-	 		 */
+			 *  - call handle_ep_out to read data from FIFO.
+			 */
 			handle_ret = handle_ep_out(epx ,NULL);
 
-			/** 
+			/**
 			 * - 1.3.4. Change state:
-	 		 *  - if queue is empty, change endpoint state to DOUT.
-			 *    it means data recieved. 
-	 		 */
+			 *  - if queue is empty, change endpoint state to DOUT.
+			 *    it means data recieved.
+			 */
 			if ( list_empty(&epx->queue) != S1R72_LIST_ISNOT_EMPTY) {
 				change_epx_state(epx, S1R72_GD_EP_DOUT);
 			}
 			break;
 		}
 
-		/** 
+		/**
 		 * - 2. Check interrupt source:
 		 *  - to check interrupt.
 		 */
@@ -4478,29 +4478,29 @@ static int usbc_irq_FPM(S1R72XXX_USBC_DEV *usbc_dev)
 	unsigned int current_pmstate;	/* MainIntStat */
 	unsigned int handshake_retval;	/* handshake status */
 	unsigned int retval;			/* return value */
-	
+
 	current_pmstate = rcD_RegRead8(usbc_dev, rcPM_Control_1) & PM_State_Mask;
 	handshake_retval = 0;
 	retval = 0;
 	rcD_IntClr8(usbc_dev, rcMainIntStat, FinishedPM);
 	s1r72xxx_queue_log(S1R72_DEBUG_IRQ_FPM, rcPM_Control_1, current_pmstate);
-	
-	/** 
+
+	/**
 	 * - 1. Check current PM_Control_1:
 	 *  - read PM_Control_1 and process below.
 	 */
 	DEBUG_MSG("%s, PM_Control=0x%02x\n", __FUNCTION__, current_pmstate);
 	switch(current_pmstate){
-	/** 
+	/**
 	 * - 1.1. ACT_DEVICE:
 	 */
 	case S1R72_PM_State_ACT_DEVICE:
-		/** 
+		/**
 		 * - 1.1.1. Enable SIE interrupt:
-	 	 *  - enable sie interrupt, DetectReset, DetectSuspend, ChirpCmp
+		 *  - enable sie interrupt, DetectReset, DetectSuspend, ChirpCmp
 		 *    RestoreCmp, SetAddressCmp.
 		 */
-		s1r72xxx_queue_log(S1R72_DEBUG_IRQ_VBUS,rcD_USB_Status , 
+		s1r72xxx_queue_log(S1R72_DEBUG_IRQ_VBUS,rcD_USB_Status ,
 				(rcD_RegRead8(usbc_dev, rcD_USB_Status)));
 		s1r72xxx_queue_log(S1R72_DEBUG_REGISTER, rcD_S1R72_NegoControl ,
 				rcD_RegRead8(usbc_dev, rcD_S1R72_NegoControl));
@@ -4517,9 +4517,9 @@ static int usbc_irq_FPM(S1R72XXX_USBC_DEV *usbc_dev)
 				| S1R72_EnChirpCmp | S1R72_EnRestoreCmp
 				| S1R72_EnSetAddressCmp));
 
-		/** 
+		/**
 		 * - 1.1.2. Resume device:
-	 	 *  - if driver state is USBSUSPD, resume device.
+		 *  - if driver state is USBSUSPD, resume device.
 		 */
 		/* Driver activated */
 		DEBUG_MSG("%s, ACT_DEVICE\n", __FUNCTION__);
@@ -4541,10 +4541,10 @@ static int usbc_irq_FPM(S1R72XXX_USBC_DEV *usbc_dev)
 				break;
 			}
 		}
-		
-		/** 
+
+		/**
 		 * - 1.1.3. Send wakeup signal:
-	 	 *  - if gadget driver call wakeup API, send wakeup signal to host.
+		 *  - if gadget driver call wakeup API, send wakeup signal to host.
 		 */
 		/* remote wakeup has occured */
 		if (usbc_dev->remote_wakeup_prc == S1R72_RT_WAKEUP_PROC){
@@ -4555,9 +4555,9 @@ static int usbc_irq_FPM(S1R72XXX_USBC_DEV *usbc_dev)
 			/* start send wakeup timer */
 			mod_timer(&usbc_dev->rm_wakeup_timer, S1R72_SEND_WAKEUP_TIME);
 
-		/** 
+		/**
 		 * - 1.1.4. Start handshake:
-	 	 *  - start handshake to host. if handshake failed, start 
+		 *  - start handshake to host. if handshake failed, start
 		 *    wait_j_timer to check USB bus status.
 		 */
 		} else {
@@ -4571,7 +4571,7 @@ static int usbc_irq_FPM(S1R72XXX_USBC_DEV *usbc_dev)
 				usbc_dev->usbcd_state
 					= change_driver_state(usbc_dev, usbc_dev->usbcd_state,
 						S1R72_GD_H_W_ACT_DEVICE);
-				
+
 				/* change ep0 state to IDLE */
 				change_ep0_state(&usbc_dev->usbc_ep[S1R72_GD_EP0],
 					S1R72_GD_EP_IDLE);
@@ -4584,7 +4584,7 @@ static int usbc_irq_FPM(S1R72XXX_USBC_DEV *usbc_dev)
 		}
 		break;
 
-	/** 
+	/**
 	 * - 1.2. SLEEP:
 	 */
 	case S1R72_PM_State_SLEEP:
@@ -4628,16 +4628,16 @@ static int usbc_irq_FPM(S1R72XXX_USBC_DEV *usbc_dev)
 			rcD_RegWrite8(usbc_dev, rcD_S1R72_SIE_IntEnb, S1R72_REG_ALL_CLR);
 		}
 
-		/** 
+		/**
 		 * - 1.2.3. Set return value:
 		 *  - set return value that means changed to sleep.
 		 */
 		retval = S1R72_PM_CHANGE_TO_SLEEP;
 		DEBUG_MSG("%s, SLEEP\n", __FUNCTION__);
 		break;
-	
+
 	default:
-		/** 
+		/**
 		 * - 1.3. another:
 		 *  - nothing to do.
 		 */
@@ -4655,7 +4655,7 @@ static int usbc_irq_FPM(S1R72XXX_USBC_DEV *usbc_dev)
 
 /* ========================================================================= */
 /**
- * @brief	- Pull up D+ Line. 
+ * @brief	- Pull up D+ Line.
  * @par		usage:
  *				internal use only.
  * @param	d_pull_up;	pull up or open.
@@ -4680,7 +4680,7 @@ static int usbc_pullup(int d_pull_up)
 		DEBUG_MSG("%s, pullup disable is not supported\n", __FUNCTION__);
 		return -EOPNOTSUPP;
 	}
-	
+
 	/**
 	 * - 2. Return:
 	 *  - return 0;
@@ -4756,7 +4756,7 @@ static int handle_ep_in(S1R72XXX_USBC_EP *ep, S1R72XXX_USBC_REQ *req)
 		DEBUG_MSG("%s, queue is not exist\n", __FUNCTION__);
 		return ret_val;
 	}
-	
+
 	/**
 	 * - 2. Check state.:
 	 *  - check epx driver state.
@@ -4793,8 +4793,8 @@ static int handle_ep_in(S1R72XXX_USBC_EP *ep, S1R72XXX_USBC_REQ *req)
 		/**
 		 * - 2.1.2. Calculate write data length:
 		 *  - write data length is max FIFO size or all data size.
-		 *    if max FIFO size is larger than all data size, write 
-		 *    all data. 
+		 *    if max FIFO size is larger than all data size, write
+		 *    all data.
 		 */
 		/* FIFO data check */
 		max_fifo =epx_max_packet_tbl[ep->ep_subname] ;
@@ -4858,7 +4858,7 @@ static int handle_ep_in(S1R72XXX_USBC_EP *ep, S1R72XXX_USBC_REQ *req)
 		}
 		s1r72xxx_queue_log(S1R72_DEBUG_REGISTER, rsFIFO_WrRemain,
 			le16_to_cpu(rsD_RegRead16(usbc_dev,rsFIFO_WrRemain)));
-		
+
 		/**
 		 * - 2.1.3. Write data to FIFO:
 		 */
@@ -4872,7 +4872,7 @@ static int handle_ep_in(S1R72XXX_USBC_EP *ep, S1R72XXX_USBC_REQ *req)
 			 * - 2.1.3.1.1. clear FIFO:
 			 */
 			S1R72_EPFIFO_CLR(usbc_dev, ep->ep_subname);
-			
+
 			/**
 			 * - 2.1.3.1.2. clear FIFO addup
 			 */
@@ -4892,7 +4892,7 @@ static int handle_ep_in(S1R72XXX_USBC_EP *ep, S1R72XXX_USBC_REQ *req)
 			} else {
 				set_epx_force_nak(usbc_dev, ep);
 			}
-			fifo_8 = (unsigned char*) (queued_req->req.buf 
+			fifo_8 = (unsigned char*) (queued_req->req.buf
 				+ queued_req->req.actual);
 			dummy_data = (*fifo_8) << 8;
 			rsD_RegWrite16(usbc_dev, rsFIFO_Wr, dummy_data);
@@ -4937,13 +4937,13 @@ static int handle_ep_in(S1R72XXX_USBC_EP *ep, S1R72XXX_USBC_REQ *req)
 #else	/* _16BIT_FIX */
 		if(length_ct == 1) {
 			DEBUG_MSG("%s, odd\n", __FUNCTION__);
-			fifo_8 = (unsigned char*) (queued_req->req.buf 
+			fifo_8 = (unsigned char*) (queued_req->req.buf
 				+ queued_req->req.actual+ access_length - 1);
 #if defined(CONFIG_USB_S1R72V18_GADGET) || defined(CONFIG_USB_S1R72V18_GADGET_MODULE)\
 	|| defined(CONFIG_USB_S1R72V27_GADGET) || defined(CONFIG_USB_S1R72V27_GADGET_MODULE)
 
 			rcD_RegWrite8(usbc_dev, rcFIFO_ByteWr, *fifo_8);
-			
+
 			/**
 			 * - 2.1.3.2. renew FIFO addup:
 			 */
@@ -4975,11 +4975,11 @@ static int handle_ep_in(S1R72XXX_USBC_EP *ep, S1R72XXX_USBC_REQ *req)
 
 		/**
 		 * - 2.1.4. Complete write data:
-		 *  - if write data length is not packet length, set 
+		 *  - if write data length is not packet length, set
 		 *    EnShortPkt and clear ForceNAK.
 		 *  - if write data length is packet length, clear ForceNAK
 		 */
-		if ( ( ( write_length % max_packet ) != 0 ) 
+		if ( ( ( write_length % max_packet ) != 0 )
 			|| ( write_length  == 0 ) ) {
 			DEBUG_MSG("%s, access_length < max_packet\n", __FUNCTION__);
 			/* send short packet */
@@ -5012,7 +5012,7 @@ static int handle_ep_in(S1R72XXX_USBC_EP *ep, S1R72XXX_USBC_REQ *req)
 		 */
 		DEBUG_MSG("%s, actual=%d,length=%d\n",
 			__FUNCTION__, queued_req->req.actual,queued_req->req.length);
-	  	if ( (queued_req->req.actual) == (queued_req->req.length) ){
+		if ( (queued_req->req.actual) == (queued_req->req.length) ){
 			if (ep->ep_subname == S1R72_GD_EP0) {
 				change_ep0_state(ep, S1R72_GD_EP_DIN_CHG);
 			}
@@ -5076,7 +5076,7 @@ static int handle_ep_out(S1R72XXX_USBC_EP *ep, S1R72XXX_USBC_REQ *req)
 
 	DEBUG_MSG("%s, enter\n", __FUNCTION__);
 	usbc_dev = container_of(ep, S1R72XXX_USBC_DEV, usbc_ep[ep->ep_subname]);
-	
+
 	/**
 	 * - 1. Find queued data:
 	 *  - serch queue list.
@@ -5095,7 +5095,7 @@ static int handle_ep_out(S1R72XXX_USBC_EP *ep, S1R72XXX_USBC_REQ *req)
 	if ( queued_req == NULL) {
 		return ret_val;
 	}
-	
+
 	/**
 	 * - 2. Check state.:
 	 *  - check epx driver state.
@@ -5104,7 +5104,7 @@ static int handle_ep_out(S1R72XXX_USBC_EP *ep, S1R72XXX_USBC_REQ *req)
 	switch(ep->ep_state){
 	/**
 	 * - 2.1. Read data from FIFO:
-	 *  - read data from FIFO and write to buffer 
+	 *  - read data from FIFO and write to buffer
 	 *    and add written length to 'actual' member.
 	 */
 	case S1R72_GD_EP_DOUT:
@@ -5125,7 +5125,7 @@ static int handle_ep_out(S1R72XXX_USBC_EP *ep, S1R72XXX_USBC_REQ *req)
 		/**
 		 * - 2.1.2. Read data loop:
 		 *  - read data from FIFO until FIFO or data queue will be
-		 *    empty. 
+		 *    empty.
 		 */
 		while(retry_flag == S1R72_FIFO_READ_RETRY){
 			/**
@@ -5151,8 +5151,8 @@ static int handle_ep_out(S1R72XXX_USBC_EP *ep, S1R72XXX_USBC_REQ *req)
 			/**
 			 * - 2.1.2.2. Calculate read data length:
 			 *  - read data length is data in FIFO or queue buffer size.
-			 *    if data in FIFO is smaller than or equal to 
-			 *    queue buffer size, read all data. 
+			 *    if data in FIFO is smaller than or equal to
+			 *    queue buffer size, read all data.
 			 */
 			fifo_remain = ep->fifo_data;
 			DEBUG_MSG("%s, RdRemain=0x%02x\n", __FUNCTION__, fifo_remain);
@@ -5186,7 +5186,7 @@ static int handle_ep_out(S1R72XXX_USBC_EP *ep, S1R72XXX_USBC_REQ *req)
 
 			if(length_ct == 1) {
 				DEBUG_MSG("%s, odd\n", __FUNCTION__);
-				fifo_8 = (unsigned char*) (queued_req->req.buf 
+				fifo_8 = (unsigned char*) (queued_req->req.buf
 					+ queued_req->req.actual+ access_length - 1);
 				*fifo_8 = (unsigned char)rcD_RegRead8(usbc_dev,
 					rcFIFO_ByteRd);
@@ -5205,7 +5205,7 @@ static int handle_ep_out(S1R72XXX_USBC_EP *ep, S1R72XXX_USBC_REQ *req)
 
 			/* clear FIFO */
 			if ( ( ep->last_is_short == S1R72_IRQ_SHORT )
-				&& (ep->fifo_data == S1R72_FIFO_EMPTY) ){ 
+				&& (ep->fifo_data == S1R72_FIFO_EMPTY) ){
 				S1R72_EPFIFO_CLR(usbc_dev, ep->ep_subname);
 
 #if defined(CONFIG_USB_S1R72V18_GADGET) || defined(CONFIG_USB_S1R72V18_GADGET_MODULE)\
@@ -5223,16 +5223,16 @@ static int handle_ep_out(S1R72XXX_USBC_EP *ep, S1R72XXX_USBC_REQ *req)
 			/**
 			 * - 2.1.2.4. Complete transfer:
 			 *  - if short packet recieved, complete OUT transfer.
-			 *    and if another request is queued, check FIFO data again. 
+			 *    and if another request is queued, check FIFO data again.
 			 */
 			s1r72xxx_queue_log(S1R72_DEBUG_HANDLE_EP,
 				ep->ep_subname, access_length);
 			DEBUG_MSG("%s, actual=%d, length=%d\n", __FUNCTION__,
 				queued_req->req.actual, queued_req->req.length);
 
-			if ( ( ep->last_is_short == S1R72_IRQ_SHORT ) 
-		  		|| ( (queued_req->req.actual) 
-		  			== (queued_req->req.length) ) ){
+			if ( ( ep->last_is_short == S1R72_IRQ_SHORT )
+				|| ( (queued_req->req.actual)
+					== (queued_req->req.length) ) ){
 				s1r72xxx_queue_log(S1R72_DEBUG_HANDLE_EP,
 					queued_req->req.actual, queued_req->req.length);
 				request_done(ep, queued_req, 0);
@@ -5320,7 +5320,7 @@ static int change_ep0_state(S1R72XXX_USBC_EP *ep, unsigned char flag)
 	DEBUG_MSG("%s,enter\n",__FUNCTION__);
 	s1r72xxx_queue_log(S1R72_DEBUG_CHG_EP0, 0, flag);
 
-	/** 
+	/**
 	 * - 1. Check flag:
 	 */
 	switch(flag){
@@ -5339,7 +5339,7 @@ static int change_ep0_state(S1R72XXX_USBC_EP *ep, unsigned char flag)
 		 */
 		rcD_RegClear8(usbc_dev, rcDeviceIntEnb, D_RcvEP0SETUP);
 		rcD_IntClr8(usbc_dev, rcDeviceIntStat, D_RcvEP0SETUP);
-		
+
 		rcD_IntClr8(usbc_dev, ep->reg.ep0.EP0IntStat, S1R72_EP_ALL_INT);
 		rcD_RegWrite8(usbc_dev, ep->reg.ep0.EP0IntEnb, S1R72_REG_ALL_CLR);
 		DEBUG_MSG("%s, EP0IntEnb\n",__FUNCTION__);
@@ -5383,13 +5383,13 @@ static int change_ep0_state(S1R72XXX_USBC_EP *ep, unsigned char flag)
 		DEBUG_MSG("%s, S1R72_GD_EP_IDLE\n",__FUNCTION__);
 		/**
 		 * - 1.2.1. Configure ep0 registers:
-		 *  - enable ep0. EP0IntEnb, DeviceIntEnb, EP0MaxSize. 
+		 *  - enable ep0. EP0IntEnb, DeviceIntEnb, EP0MaxSize.
 		 */
 		if (ep->ep_state == S1R72_GD_EP_INIT){
-			rcD_IntClr8(usbc_dev, ep->reg.ep0.EP0IntStat, 
+			rcD_IntClr8(usbc_dev, ep->reg.ep0.EP0IntStat,
 				 S1R72_IN_TranACK | S1R72_OUT_TranACK
 					| S1R72_OUT_ShortACK);
-			rcD_RegSet8(usbc_dev, ep->reg.ep0.EP0IntEnb, 
+			rcD_RegSet8(usbc_dev, ep->reg.ep0.EP0IntEnb,
 				 S1R72_EnIN_TranACK | S1R72_EnOUT_TranACK
 					| S1R72_EnOUT_ShortACK);
 			rcD_IntClr8(usbc_dev, rcDeviceIntStat,
@@ -5408,7 +5408,7 @@ static int change_ep0_state(S1R72XXX_USBC_EP *ep, unsigned char flag)
 		ep->ep_state = S1R72_GD_EP_IDLE;
 		break;
 
-	/** 
+	/**
 	 * - 1.3. flag = S1R72_GD_EP_DOUT:
 	 *  - configure ep0 OUT and change state to S1R72_GD_EP_DOUT.
 	 */
@@ -5430,7 +5430,7 @@ static int change_ep0_state(S1R72XXX_USBC_EP *ep, unsigned char flag)
 		ep->ep_state = S1R72_GD_EP_DOUT;
 		break;
 
-	/** 
+	/**
 	 * - 1.4. flag = S1R72_GD_EP_DIN:
 	 *  - configure ep0 IN and change state to S1R72_GD_EP_DIN.
 	 */
@@ -5449,8 +5449,8 @@ static int change_ep0_state(S1R72XXX_USBC_EP *ep, unsigned char flag)
 		 */
 		ep->ep_state = S1R72_GD_EP_DIN;
 		break;
-		
-	/** 
+
+	/**
 	 * - 1.5. flag = S1R72_GD_EP_DIN_CHG:
 	 *  - change state to S1R72_GD_EP_DIN_CHG.
 	 */
@@ -5463,7 +5463,7 @@ static int change_ep0_state(S1R72XXX_USBC_EP *ep, unsigned char flag)
 		ep->ep_state = S1R72_GD_EP_DIN_CHG;
 		break;
 
-	/** 
+	/**
 	 * - 1.6. flag = S1R72_GD_EP_SOUT:
 	 *  - change state to S1R72_GD_EP_SOUT.
 	 */
@@ -5484,8 +5484,8 @@ static int change_ep0_state(S1R72XXX_USBC_EP *ep, unsigned char flag)
 		 */
 		ep->ep_state = S1R72_GD_EP_SOUT;
 		break;
-		
-	/** 
+
+	/**
 	 * - 1.7. flag = S1R72_GD_EP_SIN:
 	 *  - change state to S1R72_GD_EP_SIN.
 	 */
@@ -5515,7 +5515,7 @@ static int change_ep0_state(S1R72XXX_USBC_EP *ep, unsigned char flag)
 		s1r72xxx_queue_log(S1R72_DEBUG_CHG_EP0,
 			rcD_RegRead8(usbc_dev, ep->reg.ep0.EP0ControlIN),
 			rcD_RegRead8(usbc_dev, ep->reg.ep0.EP0ControlOUT));
-		
+
 		/**
 		 * - 1.7.2. Change state to S1R72_GD_EP_SIN:
 		 *  - change state to S1R72_GD_EP_SIN.
@@ -5629,7 +5629,7 @@ static int change_epx_state(S1R72XXX_USBC_EP *ep, unsigned char flag)
 
 		/**
 		 * - 1.2.1. Configure epx registers:
-		 *  - enable epx. D_EPxMaxSize_H/L, D_EPxConfig_0, D_EPxControl, 
+		 *  - enable epx. D_EPxMaxSize_H/L, D_EPxConfig_0, D_EPxControl,
 		 *    D_EPxJoin
 		 */
 		if (ep->ep_state == S1R72_GD_EP_INIT){
@@ -5669,7 +5669,7 @@ static int change_epx_state(S1R72XXX_USBC_EP *ep, unsigned char flag)
 		ep->ep_state = S1R72_GD_EP_IDLE;
 		break;
 
-	/** 
+	/**
 	 * - 1.3. flag = S1R72_GD_EP_DOUT:
 	 *  - change state to S1R72_GD_EP_DOUT.
 	 */
@@ -5681,7 +5681,7 @@ static int change_epx_state(S1R72XXX_USBC_EP *ep, unsigned char flag)
 		ep->ep_state = S1R72_GD_EP_DOUT;
 		break;
 
-	/** 
+	/**
 	 * - 1.4. flag = S1R72_GD_EP_DIN:
 	 *  - change state to S1R72_GD_EP_DIN.
 	 */
@@ -5856,7 +5856,7 @@ unsigned char change_driver_state(S1R72XXX_USBC_DEV *usbc_dev,
 	unsigned char	next_power_state;
 	unsigned char	ret_val;
 	unsigned int	current_pmstate;	/* MainIntStat */
-	
+
 	ret_val = state;
 
 	DEBUG_MSG("%s, current=%d\n", __FUNCTION__,state);
@@ -5874,7 +5874,7 @@ unsigned char change_driver_state(S1R72XXX_USBC_DEV *usbc_dev,
 	s1r72xxx_queue_log(S1R72_DEBUG_CHG_DRV, state,	event);
 	s1r72xxx_queue_log(S1R72_DEBUG_CHG_DRV, next_driver_state,
 		next_power_state);
-	
+
 	/**
 	 * - 2. Change state:
 	 *  - it needs changing state, set ret_val and PM_Control register.
@@ -5884,7 +5884,7 @@ unsigned char change_driver_state(S1R72XXX_USBC_DEV *usbc_dev,
 		ret_val = next_driver_state;
 		DEBUG_MSG("%s, next_s=%d\n", __FUNCTION__,next_driver_state);
 	}
-	
+
 	/* hardware state check */
 	if (next_power_state != S1R72_GD_POWER_DONT_CHG){
 		DEBUG_MSG("%s, next_p=%d\n", __FUNCTION__,next_power_state);
@@ -5918,7 +5918,7 @@ unsigned char change_driver_state(S1R72XXX_USBC_DEV *usbc_dev,
 			break;
 		}
 		rcD_IntClr8(usbc_dev, rcMainIntStat, FinishedPM);
-		
+
 		rcD_RegWrite8(usbc_dev, rcPM_Control_0, next_power_state);
 	}
 
@@ -5946,7 +5946,7 @@ static void stop_activity(S1R72XXX_USBC_DEV *usbc_dev)
 	}
 	usbc_dev->driver->disconnect(&usbc_dev->gadget);
 	usbc_dev->remote_wakeup_prc	= S1R72_RT_WAKEUP_NONE;
-	
+
 	/**
 	 * - 2. Cancel all request:
 	 */
@@ -6016,7 +6016,7 @@ void remote_wakeup_timer(unsigned long _dev)
 
 	/**
 	 * - 2. Clear resume signal:
-	 *  - clear SendWakeup bit to stop sending resume signal 
+	 *  - clear SendWakeup bit to stop sending resume signal
 	 *    and set NonJ interrupt.
 	 */
 	rcD_RegClear8(usbc_dev, rcD_S1R72_NegoControl, S1R72_SendWakeup);
@@ -6067,7 +6067,7 @@ void chirp_cmp_timer(unsigned long _dev)
 		}
 		timeout_ct++;
 	}
-	
+
 	if( j_state_flag == S1R72_LineState_J){
 		DEBUG_MSG("%s, start handshake\n", __FUNCTION__);
 		/**
@@ -6080,7 +6080,7 @@ void chirp_cmp_timer(unsigned long _dev)
 		usbc_dev->usbcd_state
 			= change_driver_state(usbc_dev, usbc_dev->usbcd_state,
 				S1R72_GD_H_W_ACT_DEVICE);
-		
+
 		/* change ep0 state to IDLE */
 		change_ep0_state(&usbc_dev->usbc_ep[S1R72_GD_EP0],
 			S1R72_GD_EP_IDLE);
@@ -6098,7 +6098,7 @@ void chirp_cmp_timer(unsigned long _dev)
 			usbc_irq_VBUS(usbc_dev);
 		}
 	}
-		
+
 	/**
 	 * - 3. Enable IRQ:
 	 *  - call spin_unlock_irqrestore.
@@ -6112,7 +6112,7 @@ void chirp_cmp_timer(unsigned long _dev)
 /**
  * @brief	- VBUS wait timer handler.
  * @par		usage:
- * 				internal use only.
+ *				internal use only.
  * @param	_dev;	device informations structure.
  * @retval	none.
  */
@@ -6157,7 +6157,7 @@ static unsigned long usbtg_led_next_time(unsigned long now, unsigned long time)
 
 	differ = (0xffffffff - now);
 
-	if( differ < time ) { 
+	if( differ < time ) {
 		ret = (time - differ);
 	} else {
 		ret = (now + time);
@@ -6175,7 +6175,7 @@ static void usbtg_led(int flag)
 		next_led = EBOOK5_LED_OFF;
 		__imx_gpio_set_value((GPIO_PORTB|8), next_led);
 		break;
-	
+
 	case EBOOK5_LED_ON:
 		next_led = EBOOK5_LED_ON;
 		__imx_gpio_set_value((GPIO_PORTB|8), next_led);

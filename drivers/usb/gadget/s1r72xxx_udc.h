@@ -7,7 +7,7 @@
  */
 #ifndef S1R72XXX_USBC_H	/* include guard */
 #define S1R72XXX_USBC_H
-#define CONFIG_USB_S1R72V17_GADGET_16BIT_FIX
+//#define CONFIG_USB_S1R72V17_GADGET_16BIT_FIX
 //#define CONFIG_USB_S1R72V05_GADGET_16BIT_FIX
 //#define CONFIG_USB_S1R72V27_GADGET_16BIT_FIX
 //#define DEBUG_PRINTK	/** enable console log */
@@ -29,7 +29,7 @@
 #define DEBUG_MSG(args...) \
 		printk(args)
 #else /* DEBUG_PRINTK */
-#define DEBUG_MSG(args...) 
+#define DEBUG_MSG(args...)
 #endif /* DEBUG_PRINTK */
 /*@}*/
 
@@ -203,7 +203,7 @@ struct	tag_S1R72XXX_USBC_DEV;
 
 	#define rcD_RegWrite8(x, addr, data)	\
 		 ( rsD_REGS16(x, ((addr) & 0xFFFE))\
-		 	= ((addr) & 0x01) \
+			= ((addr) & 0x01) \
 				? ((rsD_REGS16(x, ((addr) & 0xFFFE)) & S1R72_LW_MASK)\
 						| ((data) << 8)) \
 				: ((rsD_REGS16(x, addr) & S1R72_UP_MASK) | (data)) )
@@ -213,7 +213,7 @@ struct	tag_S1R72XXX_USBC_DEV;
 
 	#define rsD_RegWrite16(x, addr, data)	\
 		rsD_REGS16(x, (addr)) = (data)
-			
+
 	#define rcD_RegRead8(x, addr)	\
 			( (((addr) & 0x01) \
 				? (unsigned char)((rsD_REGS16(x, ((addr) & 0xFFFE))\
@@ -231,11 +231,11 @@ struct	tag_S1R72XXX_USBC_DEV;
 			= ((addr) & 0x01) \
 				? (rsD_REGS16(x, ((addr) & 0xFFFE)) | ((data) << 8) ) \
 				: ((rsD_REGS16(x, (addr)) | (data))) )
-	
+
 	#define rcD_RegClear8(x, addr, data)	\
 		( rsD_REGS16(x, ((addr) & 0xFFFE))\
 			= ((addr) & 0x01) \
-	  			? ( rsD_REGS16(x, ((addr) & 0xFFFE)) & (~((data) << 8)) )  \
+				? ( rsD_REGS16(x, ((addr) & 0xFFFE)) & (~((data) << 8)) )  \
 				: ( rsD_REGS16(x,  (addr)) & (~(data)) ) )
 
 	#define INT_BIT_SET(x, y)	( ((x) & 0x01) ? ((y) << 8) : (y) )
@@ -248,13 +248,13 @@ struct	tag_S1R72XXX_USBC_DEV;
 
 	#define rcD_RegWrite8(x, addr, data)	\
 		  ( rcD_REGS8(x, (addr) ) =  (data) )
-			
+
 	#define rsD_RegWrite16(x, addr, data)	\
 		(rsD_REGS16(x, (addr)) = (data) )
-			
+
 	#define rcD_RegRead8(x, addr)	\
 		(rcD_REGS8(x, (addr)) )
-	
+
 	#define rsD_RegRead16(x, addr)	\
 		( rsD_REGS16(x, addr) )
 
@@ -263,11 +263,11 @@ struct	tag_S1R72XXX_USBC_DEV;
 
 	#define rcD_RegSet8(x, addr, data)	\
 		( rcD_REGS8(x, (addr)) |= (data))
-	
+
 	#define rcD_RegClear8(x, addr, data)	\
 		( rcD_REGS8(x, (addr)) &= (~(data) ) )  \
 
-	#define INT_BIT_SET(x, y)	(y) 
+	#define INT_BIT_SET(x, y)	(y)
 #endif
 
 /** self powered macro for GET_STATUS */
@@ -506,25 +506,25 @@ typedef union tag_S1R72XXX_EP_REGS {
  * @brief	Structure of the S1R72xxx endpoint informations
  */
 typedef struct tag_S1R72XXX_USBC_EP {
-	int ep_subname; 				/** Endpoint Name */
-	unsigned char ep_state; 		/** Endpoint State */
-	struct usb_ep ep; 				/** USB Endpoint Structure */
-	struct tag_S1R72XXX_USBC_DEV *dev; 	/** S1R72XXX Information Structure */
-	struct list_head queue; 		/** Head of queues list */
+	int ep_subname;				/** Endpoint Name */
+	unsigned char ep_state;		/** Endpoint State */
+	struct usb_ep ep;				/** USB Endpoint Structure */
+	struct tag_S1R72XXX_USBC_DEV *dev;	/** S1R72XXX Information Structure */
+	struct list_head queue;		/** Head of queues list */
 	/** Endpoint Descriptor */
 	const struct usb_endpoint_descriptor *ep_desc;
-	u8 bEndpointAddress; 			/** Endpoint Address */
-	u8 bmAttributes; 				/** Attributes */
-	u16 wMaxPacketSize; 			/** Maximum packet size of this endpoint */
-	u8 bInterval; 					/** Polling interval */
-	unsigned short fifo_size; 		/** Hardware specific FIFO size */
-	unsigned int fifo_data; 		/** recieved data */
+	u8 bEndpointAddress;			/** Endpoint Address */
+	u8 bmAttributes;				/** Attributes */
+	u16 wMaxPacketSize;			/** Maximum packet size of this endpoint */
+	u8 bInterval;					/** Polling interval */
+	unsigned short fifo_size;		/** Hardware specific FIFO size */
+	unsigned int fifo_data;		/** recieved data */
 #if defined(CONFIG_USB_S1R72V18_GADGET) || defined(CONFIG_USB_S1R72V18_GADGET_MODULE)\
 	|| defined(CONFIG_USB_S1R72V27_GADGET) || defined(CONFIG_USB_S1R72V27_GADGET_MODULE)
 	unsigned int fifo_addup;		/** FIFO addup */
 #endif
-	unsigned char intenb; 			/** Interrupt occured or not */
-	unsigned char last_is_short; 	/** short packet flag */
+	unsigned char intenb;			/** Interrupt occured or not */
+	unsigned char last_is_short;	/** short packet flag */
 	unsigned char is_stopped;		/** stalled or not  */
 	S1R72XXX_EP_REGS reg;			/** endpoint registers */
 } S1R72XXX_USBC_EP;

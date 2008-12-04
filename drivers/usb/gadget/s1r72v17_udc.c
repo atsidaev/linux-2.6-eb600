@@ -231,7 +231,7 @@ S1R72XXX_USBC_DRV_STATE_TABLE_ELEMENT \
 	}
 };
 
-unsigned short start_adrs_tbl[S1R72_MAX_ENDPOINT] = 
+unsigned short start_adrs_tbl[S1R72_MAX_ENDPOINT] =
 {
 	S1R72_EP0_START_ADRS,
 	S1R72_EPA_START_ADRS,
@@ -241,7 +241,7 @@ unsigned short start_adrs_tbl[S1R72_MAX_ENDPOINT] =
 	S1R72_EPE_START_ADRS
 };
 
-unsigned short end_adrs_tbl[S1R72_MAX_ENDPOINT] = 
+unsigned short end_adrs_tbl[S1R72_MAX_ENDPOINT] =
 {
 	S1R72_EP0_END_ADRS,
 	S1R72_EPA_END_ADRS,
@@ -359,7 +359,7 @@ void usbc_ep_init(S1R72XXX_USBC_DEV *dev)
 	unsigned char	ep_ct;	/* endpoint counter */
 
 	ep_ct = S1R72_GD_EP0;
-	
+
 	/**
 	 * - 1. Initialize s1r72xxx_usbc_ep endpoint structures:
 	 *  - initialize member of endpoint structures depends on hardware.
@@ -414,7 +414,7 @@ void usbc_ep_init(S1R72XXX_USBC_DEV *dev)
 		dev->usbc_ep[ep_ct].ep.maxpacket	= epx_max_packet_tbl[ep_ct];
 		dev->usbc_ep[ep_ct].ep_subname	= ep_ct;
 		dev->usbc_ep[ep_ct].fifo_size	= epx_max_packet_tbl[ep_ct];
-		dev->usbc_ep[ep_ct].fifo_data	= 0; 
+		dev->usbc_ep[ep_ct].fifo_data	= 0;
 		dev->usbc_ep[ep_ct].dev	= dev;
 		dev->usbc_ep[ep_ct].intenb	= S1R72_IRQ_NOT_OCCURED;
 		dev->usbc_ep[ep_ct].last_is_short = S1R72_IRQ_SHORT;
@@ -435,7 +435,7 @@ void usbc_ep_init(S1R72XXX_USBC_DEV *dev)
 void usbc_fifo_init(S1R72XXX_USBC_DEV *dev)
 {
 	unsigned char	ep_ct;	/** endpoint number */
-	
+
 	ep_ct = S1R72_GD_EP0;
 
 	/**
@@ -450,7 +450,7 @@ void usbc_fifo_init(S1R72XXX_USBC_DEV *dev)
 
 	/* fifo clear */
 	S1R72_EPFIFO_CLR(dev, S1R72_GD_EP0);
-	
+
 	/* fifo join */
 	S1R72_AREAxJOIN_ENB(dev, S1R72_GD_EP0);
 
@@ -464,7 +464,7 @@ void usbc_fifo_init(S1R72XXX_USBC_DEV *dev)
 			start_adrs_tbl[ep_ct]);
 		rsD_RegWrite16(dev, dev->usbc_ep[ep_ct].reg.epx.EPxEndAdrs,
 			end_adrs_tbl[ep_ct]);
-		
+
 		/* fifo clear */
 		S1R72_EPFIFO_CLR(dev, ep_ct);
 	}

@@ -39,8 +39,8 @@
 
 #define rcDeviceIntEnb			(0x09)	/* EPr Interrupt Enable			*/
 
-#define rcHostIntStat			(0x02)	/* SIE Interrupt Status 		*/
-#define rcHostIntEnb			(0x0A)	/* SIE Interrupt Enable 		*/
+#define rcHostIntStat			(0x02)	/* SIE Interrupt Status		*/
+#define rcHostIntEnb			(0x0A)	/* SIE Interrupt Enable		*/
 #define VBUSErr				_BIT(7)
 #define LineChg				_BIT(6)
 #define H_SIE_Int1			_BIT(5)
@@ -94,7 +94,7 @@
 
 #define rcH_USB_Status			(0x19)	/* Host USB Status				*/
 
-#define rcHostDeviceSel			(0x1F)	/* Host Device Select 			*/
+#define rcHostDeviceSel			(0x1F)	/* Host Device Select			*/
 #define HOST_MODE			_BIT(0)
 
 #define rsFIFO_Rd				(0x20)	/* FIFO Read					*/
@@ -126,39 +126,39 @@
 #define rcRAM_WrDoor_1			(0x3B)	/* RAM Write Door Low			*/
 
 
-#define rcRAM_Rd_00				(0x40)	/* RAM Read 00	 				*/
-#define rcRAM_Rd_01				(0x41)	/* RAM Read 01	 				*/
-#define rcRAM_Rd_02				(0x42)	/* RAM Read 02	 				*/
-#define rcRAM_Rd_03				(0x43)	/* RAM Read 03	 				*/
-#define rcRAM_Rd_04				(0x44)	/* RAM Read 04	 				*/
-#define rcRAM_Rd_05				(0x45)	/* RAM Read 05	 				*/
-#define rcRAM_Rd_06				(0x46)	/* RAM Read 06	 				*/
-#define rcRAM_Rd_07				(0x47)	/* RAM Read 07	 				*/
-#define rcRAM_Rd_08				(0x48)	/* RAM Read 08	 				*/
-#define rcRAM_Rd_09				(0x49)	/* RAM Read 09	 				*/
+#define rcRAM_Rd_00				(0x40)	/* RAM Read 00					*/
+#define rcRAM_Rd_01				(0x41)	/* RAM Read 01					*/
+#define rcRAM_Rd_02				(0x42)	/* RAM Read 02					*/
+#define rcRAM_Rd_03				(0x43)	/* RAM Read 03					*/
+#define rcRAM_Rd_04				(0x44)	/* RAM Read 04					*/
+#define rcRAM_Rd_05				(0x45)	/* RAM Read 05					*/
+#define rcRAM_Rd_06				(0x46)	/* RAM Read 06					*/
+#define rcRAM_Rd_07				(0x47)	/* RAM Read 07					*/
+#define rcRAM_Rd_08				(0x48)	/* RAM Read 08					*/
+#define rcRAM_Rd_09				(0x49)	/* RAM Read 09					*/
 #define rcRAM_Rd_0A				(0x4A)	/* RAM Read 0A					*/
-#define rcRAM_Rd_0B				(0x4B)	/* RAM Read 0B	 				*/
-#define rcRAM_Rd_0C				(0x4C)	/* RAM Read 0C	 				*/
-#define rcRAM_Rd_0D				(0x4D)	/* RAM Read 0D	 				*/
-#define rcRAM_Rd_0E				(0x4E)	/* RAM Read 0E	 				*/
-#define rcRAM_Rd_0F				(0x4F)	/* RAM Read 0F	 				*/
+#define rcRAM_Rd_0B				(0x4B)	/* RAM Read 0B					*/
+#define rcRAM_Rd_0C				(0x4C)	/* RAM Read 0C					*/
+#define rcRAM_Rd_0D				(0x4D)	/* RAM Read 0D					*/
+#define rcRAM_Rd_0E				(0x4E)	/* RAM Read 0E					*/
+#define rcRAM_Rd_0F				(0x4F)	/* RAM Read 0F					*/
 
-#define rcRAM_Rd_10				(0x50)	/* RAM Read 10	 				*/
-#define rcRAM_Rd_11				(0x51)	/* RAM Read 11	 				*/
-#define rcRAM_Rd_12				(0x52)	/* RAM Read 12	 				*/
-#define rcRAM_Rd_13				(0x53)	/* RAM Read 13	 				*/
-#define rcRAM_Rd_14				(0x54)	/* RAM Read 14	 				*/
-#define rcRAM_Rd_15				(0x55)	/* RAM Read 15	 				*/
-#define rcRAM_Rd_16				(0x56)	/* RAM Read 16	 				*/
-#define rcRAM_Rd_17				(0x57)	/* RAM Read 17	 				*/
-#define rcRAM_Rd_18				(0x58)	/* RAM Read 18	 				*/
-#define rcRAM_Rd_19				(0x59)	/* RAM Read 19	 				*/
-#define rcRAM_Rd_1A				(0x5A)	/* RAM Read 1A	 				*/
-#define rcRAM_Rd_1B				(0x5B)	/* RAM Read 1B	 				*/
-#define rcRAM_Rd_1C				(0x5C)	/* RAM Read 1C	 				*/
-#define rcRAM_Rd_1D				(0x5D)	/* RAM Read 1D	 				*/
-#define rcRAM_Rd_1E				(0x5E)	/* RAM Read 1E	 				*/
-#define rcRAM_Rd_1F				(0x5F)	/* RAM Read 1F	 				*/
+#define rcRAM_Rd_10				(0x50)	/* RAM Read 10					*/
+#define rcRAM_Rd_11				(0x51)	/* RAM Read 11					*/
+#define rcRAM_Rd_12				(0x52)	/* RAM Read 12					*/
+#define rcRAM_Rd_13				(0x53)	/* RAM Read 13					*/
+#define rcRAM_Rd_14				(0x54)	/* RAM Read 14					*/
+#define rcRAM_Rd_15				(0x55)	/* RAM Read 15					*/
+#define rcRAM_Rd_16				(0x56)	/* RAM Read 16					*/
+#define rcRAM_Rd_17				(0x57)	/* RAM Read 17					*/
+#define rcRAM_Rd_18				(0x58)	/* RAM Read 18					*/
+#define rcRAM_Rd_19				(0x59)	/* RAM Read 19					*/
+#define rcRAM_Rd_1A				(0x5A)	/* RAM Read 1A					*/
+#define rcRAM_Rd_1B				(0x5B)	/* RAM Read 1B					*/
+#define rcRAM_Rd_1C				(0x5C)	/* RAM Read 1C					*/
+#define rcRAM_Rd_1D				(0x5D)	/* RAM Read 1D					*/
+#define rcRAM_Rd_1E				(0x5E)	/* RAM Read 1E					*/
+#define rcRAM_Rd_1F				(0x5F)	/* RAM Read 1F					*/
 
 
 #define rcDMA0_Config			(0x61)	/* DMA0 Configuration			*/
@@ -177,7 +177,7 @@
 #define rcDMA0_WrData_0			(0x6E)	/* DMA0 Write Data High				*/
 #define rcDMA0_WrData_1			(0x6F)	/* DMA0 Write Data Low				*/
 
-#define rcModeProtect			(0x71)	/* Mode Protection 					*/
+#define rcModeProtect			(0x71)	/* Mode Protection					*/
 #define Protect				(0x00)
 #define unProtect			(0x56)
 
@@ -204,7 +204,7 @@
 #define rcAREA0StartAdrs_L		(0x81)	/* AREA 0 Start Address Low			*/
 #define rcAREA0EndAdrs			(0x82)	/* AREA 0 End Address				*/
 #define rcAREA0EndAdrs_H		(0x82)	/* AREA 0 End Address High			*/
-#define rcAREA0EndAdrs_L		(0x83)	/* AREA 0 End Address Low			*/	
+#define rcAREA0EndAdrs_L		(0x83)	/* AREA 0 End Address Low			*/
 #define rcAREA1StartAdrs		(0x84)	/* AREA 1 Start Address				*/
 #define rcAREA1StartAdrs_H		(0x84)	/* AREA 1 Start Address High		*/
 #define rcAREA1StartAdrs_L		(0x85)	/* AREA 1 Start Address Low			*/
