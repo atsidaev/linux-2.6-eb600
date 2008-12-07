@@ -1,3 +1,10 @@
+linux-2.6 (2.6.27-3) asimov; urgency=low
+
+  * Merge with 2.6.27.8
+  * Fix BSoD in Windows when device is connected to PC via USB
+
+ -- Yauhen Kharuzhy <jekhor@gmail.com>  Sun, 07 Dec 2008 22:47:09 +0200
+
 linux-2.6 (2.6.27-2) asimov; urgency=low
 
   * eink_apollofb: Test version of double-buffering API
