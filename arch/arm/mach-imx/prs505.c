@@ -1,12 +1,6 @@
 /*
  * arch/arm/mach-imx/prs505.c
  *
- * Initially based on:
- *	linux-2.6.25.rc8-imx/arch/arm/mach-imx/Mx1ads.c
- *	Zhang Wenjie <zwjsq@vip.sina.com>
- *	This is a part of project openinkpot
- * 2004 (c) MontaVista Software, Inc.
- *
  * This file is licensed under the terms of the GNU General Public
  * License version 2. This program is licensed "as is" without any
  * warranty of any kind, whether express or implied.
@@ -15,6 +9,7 @@
 #include <linux/device.h>
 #include <linux/init.h>
 #include <linux/platform_device.h>
+#include <linux/mtd/physmap.h>
 #include <asm/system.h>
 #include <mach/hardware.h>
 #include <asm/irq.h>
@@ -166,6 +161,70 @@ static struct resource ebook_usb_s1r72v17_resources[] = {
 	},
 };
 
+static struct resource prs505_nor_resource[] = {
+	[0] = {
+		.start = PRS505_FLASH_PHYS,
+		.end   = PRS505_FLASH_PHYS + PRS505_FLASH_SIZE - 1,
+		.flags = IORESOURCE_MEM,
+	}
+};
+
+static struct mtd_partition prs505_nor_part[] = {
+	[0] = {
+		.name		= "Loader",
+		.size		= 0x40000,
+		.offset		= 0,
+		.mask_flags	= MTD_WRITEABLE,
+	},
+	[1] = {
+		.name		= "Wf",
+		.size		= 0x40000,
+		.offset		= 0x40000,
+		.mask_flags	= MTD_WRITEABLE,
+	},
+	[2] = {
+		.name		= "BootImg",
+		.size		= 0x80000,
+		.offset		= 0x80000,
+		.mask_flags	= MTD_WRITEABLE,
+	},
+	[3] = {
+		.name		= "Id",
+		.size		= 0x10000,
+		.offset		= 0x1c0000,
+		.mask_flags	= MTD_WRITEABLE,
+	},
+	[4] = {
+		.name		= "Info",
+		.size		= 0x10000,
+		.offset		= 0x1d0000,
+		.mask_flags	= MTD_WRITEABLE,
+	},
+	[5] = {
+		.name		= "FIS directory",
+		.size		= 0x10000,
+		.offset		= 0x1f0000,
+		.mask_flags	= MTD_WRITEABLE,
+	},
+};
+
+
+static struct physmap_flash_data prs505_nor_flash_data = {
+	.width		= 2,
+	.parts		= prs505_nor_part,
+	.nr_parts	= ARRAY_SIZE(prs505_nor_part),
+};
+
+static struct platform_device prs505_device_nor = {
+	.name		= "physmap-flash",
+	.id		= -1,
+	.dev		= {
+		.platform_data = &prs505_nor_flash_data,
+	},
+	.num_resources	= ARRAY_SIZE(prs505_nor_resource),
+	.resource	= prs505_nor_resource,
+};
+
 static struct platform_device ebook_usb_s1r72v17_device = {
 	.name		= "s1r72v17",
 	.num_resources	= ARRAY_SIZE(ebook_usb_s1r72v17_resources),
@@ -176,6 +235,7 @@ static struct platform_device *devices[] __initdata = {
 //	&imx_uart1_device,
 	&imx_uart2_device,
 	&ebook_usb_s1r72v17_device,
+	&prs505_device_nor,
 };
 
 static void ebook_power_off(void)
