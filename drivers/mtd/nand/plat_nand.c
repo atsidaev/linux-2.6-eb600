@@ -47,8 +47,8 @@ static int __init plat_nand_probe(struct platform_device *pdev)
 				pdev->resource[0].end - pdev->resource[0].start + 1);
 	if (data->io_base == NULL) {
 		dev_err(&pdev->dev, "ioremap failed\n");
-		kfree(data);
-		return -EIO;
+		res = -EIO;
+		goto err_ioremap;
 	}
 
 	data->chip.priv = &data;
@@ -70,10 +70,18 @@ static int __init plat_nand_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, data);
 
+	if (pdata->ctrl.setup_ios) {
+		res = pdata->ctrl.setup_ios(&data->mtd);
+		if (res) {
+			dev_err(&pdev->dev, "Failed to initialize NAND I/O lines\n");
+			goto err_setup_ios;
+		}
+	}
+
 	/* Scan to find existance of the device */
 	if (nand_scan(&data->mtd, 1)) {
 		res = -ENXIO;
-		goto out;
+		goto err_nand_scan;
 	}
 
 #ifdef CONFIG_MTD_PARTITIONS
@@ -98,9 +106,13 @@ static int __init plat_nand_probe(struct platform_device *pdev)
 		return res;
 
 	nand_release(&data->mtd);
-out:
+err_nand_scan:
+	if (pdata->ctrl.release_ios)
+		pdata->ctrl.release_ios(&data->mtd);
+err_setup_ios:
 	platform_set_drvdata(pdev, NULL);
 	iounmap(data->io_base);
+err_ioremap:
 	kfree(data);
 	return res;
 }
@@ -121,6 +133,8 @@ static int __devexit plat_nand_remove(struct platform_device *pdev)
 		kfree(data->parts);
 #endif
 	iounmap(data->io_base);
+	if (pdata->ctrl.release_ios)
+		pdata->ctrl.release_ios(&data->mtd);
 	kfree(data);
 
 	return 0;

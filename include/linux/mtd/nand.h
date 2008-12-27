@@ -606,6 +606,8 @@ struct platform_nand_ctrl {
 	void		(*select_chip)(struct mtd_info *mtd, int chip);
 	void		(*cmd_ctrl)(struct mtd_info *mtd, int dat,
 				    unsigned int ctrl);
+	int		(*setup_ios)(struct mtd_info *mtd);
+	void		(*release_ios)(struct mtd_info *mtd);
 	void		*priv;
 };
 
