@@ -10,6 +10,7 @@
 #include <linux/init.h>
 #include <linux/platform_device.h>
 #include <linux/mtd/physmap.h>
+#include <linux/mtd/nand.h>
 #include <asm/system.h>
 #include <mach/hardware.h>
 #include <asm/irq.h>
@@ -20,7 +21,7 @@
 #include <asm/mach/arch.h>
 #include <asm/mach-types.h>
 
-#include <mach/mmc.h>
+#include <mach/gpio.h>
 #include <mach/imx-uart.h>
 #include <linux/interrupt.h>
 #include "generic.h"
@@ -77,6 +78,15 @@
 
 /*regsiters for dma*/
 #define _reg_DMA_DIMR		DIMR
+
+#define PRS505_NAND_CE0		(GPIO_PORTC | 14)
+#define PRS505_NAND_BUSY	(GPIO_PORTC | 15)
+#define PRS505_NAND_CLE		(GPIO_PORTC | 16)
+#define PRS505_NAND_ALE		(GPIO_PORTC | 17)
+
+static const int nand_gpios[] = {PRS505_NAND_CE0, PRS505_NAND_BUSY,
+	PRS505_NAND_CLE, PRS505_NAND_ALE};
+
 
 static struct imxuart_platform_data uart_pdata = {
 	.flags = IMXUART_HAVE_RTSCTS,
@@ -147,6 +157,94 @@ static struct platform_device imx_uart2_device = {
 		.platform_data = &uart_pdata,
 	}
 };
+
+static int prs505_nand_setup_ios(struct mtd_info *mtd)
+{
+	int i, err = 0;
+
+	for (i = 0; i < ARRAY_SIZE(nand_gpios); i++)
+		if (imx_gpio_request(nand_gpios[i], "prs505-nand")) {
+			err = -EBUSY;
+			goto err_gpio_request;
+		}
+
+	gpio_direction_input(PRS505_NAND_BUSY);
+	gpio_direction_output(PRS505_NAND_CE0, 0);
+	gpio_direction_output(PRS505_NAND_CLE, 0);
+	gpio_direction_output(PRS505_NAND_ALE, 0);
+
+	return 0;
+
+err_gpio_request:
+	if (i)
+		do {
+			i--;
+			gpio_free(nand_gpios[i]);
+		} while (i);
+
+	return err;
+}
+
+static void prs505_nand_release_ios(struct mtd_info *mtd)
+{
+	int i;
+
+	for (i = 0; i < ARRAY_SIZE(nand_gpios); i++)
+		gpio_free(nand_gpios[i]);
+}
+
+static int prs505_nand_dev_ready(struct mtd_info *mtd)
+{
+	return gpio_get_value(PRS505_NAND_BUSY) ? 1 : 0;
+}
+
+static void prs505_nand_cmd_ctrl(struct mtd_info *mtd, int cmd,
+		unsigned int ctrl)
+{
+	struct nand_chip *chip = mtd->priv;
+
+	if (ctrl & NAND_CTRL_CHANGE) {
+		gpio_set_value(PRS505_NAND_CE0, (ctrl & NAND_NCE) ? 0 : 1);
+		gpio_set_value(PRS505_NAND_CLE, (ctrl & NAND_CLE) ? 1 : 0);
+		gpio_set_value(PRS505_NAND_ALE, (ctrl & NAND_ALE) ? 1 : 0);
+	}
+
+	if (cmd != NAND_CMD_NONE)
+		writeb(cmd, chip->IO_ADDR_W);
+}
+
+static struct platform_nand_data prs505_nand_flash_data = {
+	.chip	= {
+		.nr_chips	= 1,
+		.chip_delay	= 25,
+	},
+	.ctrl	= {
+		.dev_ready	= prs505_nand_dev_ready,
+		.cmd_ctrl	= prs505_nand_cmd_ctrl,
+		.setup_ios	= prs505_nand_setup_ios,
+		.release_ios	= prs505_nand_release_ios,
+	},
+};
+
+static struct resource prs505_nand_resource[] = {
+	[0] = {
+		.start = IMX_CS1_PHYS,
+		.end   = IMX_CS1_PHYS + IMX_CS1_SIZE - 1,
+		.flags = IORESOURCE_MEM,
+	}
+};
+
+
+static struct platform_device prs505_device_nand = {
+	.name		= "gen_nand",
+	.id		= -1,
+	.dev		= {
+		.platform_data = &prs505_nand_flash_data,
+	},
+	.resource	= prs505_nand_resource,
+	.num_resources	= ARRAY_SIZE(prs505_nand_resource),
+};
+
 
 static struct resource ebook_usb_s1r72v17_resources[] = {
 	[0] = {
@@ -236,6 +334,7 @@ static struct platform_device *devices[] __initdata = {
 	&imx_uart2_device,
 	&ebook_usb_s1r72v17_device,
 	&prs505_device_nor,
+	&prs505_device_nand,
 };
 
 static void ebook_power_off(void)

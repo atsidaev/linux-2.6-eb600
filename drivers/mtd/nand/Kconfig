@@ -446,8 +446,4 @@ config MTD_NAND_SH_FLCTL
 	  Several Renesas SuperH CPU has FLCTL. This option enables support
 	  for NAND Flash using FLCTL. This driver support SH7723.
 
-config MTD_NAND_EB
-	tristate "Support for NAND Flash on Sony PRS-505 Ebook"
-	depends on MTD_NAND && MTD_EB
-
 endif # MTD_NAND
