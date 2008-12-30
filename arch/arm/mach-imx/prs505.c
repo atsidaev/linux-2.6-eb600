@@ -332,11 +332,11 @@ static struct platform_device ebook_usb_s1r72v17_device = {
 };
 
 static struct platform_device *devices[] __initdata = {
-//	&imx_uart1_device,
 	&imx_uart2_device,
 	&ebook_usb_s1r72v17_device,
 	&prs505_device_nor,
 	&prs505_device_nand,
+	&imx_uart1_device,
 };
 
 static void ebook_power_off(void)
