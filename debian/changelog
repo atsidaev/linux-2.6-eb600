@@ -1,3 +1,10 @@
+linux-2.6 (2.6.28-1) asimov; urgency=low
+
+  * New upstream version
+  * Initial Sony PRS-505 support
+
+ -- Yauhen Kharuzhy <jekhor@gmail.com>  Wed, 31 Dec 2008 18:51:12 +0200
+
 linux-2.6 (2.6.27-3) asimov; urgency=low
 
   * Merge with 2.6.27.8
