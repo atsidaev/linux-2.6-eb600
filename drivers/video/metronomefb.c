@@ -41,8 +41,6 @@
 #include <asm/unaligned.h>
 
 /* Display specific information */
-//#define DPY_W 832
-//#define DPY_H 622
 #define DPY_W 832
 #define DPY_H 622
 
@@ -298,7 +296,6 @@ static int __devinit load_waveform(u8 *mem, size_t size, int m, int t,
 	if (cksum_idx > size)
 		return -EINVAL;
 	cksum = calc_cksum(owfm_idx, cksum_idx, mem);
-	printk("cksum_idx = %d, mem_idx = %d, cksum = %u\n", cksum_idx, mem_idx, cksum);
 	if (cksum != mem[cksum_idx]) {
 		dev_err(dev, "Error: bad waveform data cksum"
 				" %x != %x\n", cksum, mem[cksum_idx]);
@@ -424,20 +421,15 @@ static int __devinit metronome_init_regs(struct metronomefb_par *par)
 		return res;
 
 	res = metronome_powerup_cmd(par);
-	if (res) {
-		printk(KERN_ERR "metronome_powerup_cmd() failed, res = %d\n", res);
+	if (res)
 		return res;
-	}
 
 	res = metronome_config_cmd(par);
-	if (res) {
-		printk(KERN_ERR "metronome_config_cmd() failed, res = %d\n", res);
+	if (res)
 		return res;
-	}
 
 	res = metronome_init_cmd(par);
-	if (res)
-		printk(KERN_ERR "metronome_init_cmd() failed, res = %d\n", res);
+
 	return res;
 }
 
