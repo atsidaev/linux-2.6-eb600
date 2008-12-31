@@ -229,7 +229,7 @@ static struct resource imx_mmc_resources[] = {
 
 static u64 imxmmmc_dmamask = 0xffffffffUL;
 
-static struct platform_device imx_mmc_device = {
+struct platform_device imx_mmc_device = {
 	.name		= "imx-mmc",
 	.id		= 0,
 	.dev		= {
@@ -239,6 +239,7 @@ static struct platform_device imx_mmc_device = {
 	.num_resources	= ARRAY_SIZE(imx_mmc_resources),
 	.resource	= imx_mmc_resources,
 };
+EXPORT_SYMBOL(imx_mmc_device);
 
 void __init imx_set_mmc_info(struct imxmmc_platform_data *info)
 {
@@ -251,6 +252,7 @@ void __init set_imx_fb_info(struct imx_fb_platform_data *hard_imx_fb_info)
 {
 	memcpy(&imx_fb_info,hard_imx_fb_info,sizeof(struct imx_fb_platform_data));
 }
+EXPORT_SYMBOL(set_imx_fb_info);
 
 static struct resource imxfb_resources[] = {
 	[0] = {
@@ -267,7 +269,7 @@ static struct resource imxfb_resources[] = {
 
 static u64 fb_dma_mask = ~(u64)0;
 
-static struct platform_device imxfb_device = {
+struct platform_device imxfb_device = {
 	.name		= "imx-fb",
 	.id		= 0,
 	.dev		= {
@@ -278,11 +280,7 @@ static struct platform_device imxfb_device = {
 	.num_resources	= ARRAY_SIZE(imxfb_resources),
 	.resource	= imxfb_resources,
 };
-
-static struct platform_device *devices[] __initdata = {
-	&imx_mmc_device,
-	&imxfb_device,
-};
+EXPORT_SYMBOL(imxfb_device);
 
 static struct map_desc imx_io_desc[] __initdata = {
 	{
@@ -299,11 +297,3 @@ imx_map_io(void)
 	iotable_init(imx_io_desc, ARRAY_SIZE(imx_io_desc));
 }
 
-static int __init imx_init(void)
-{
-	return platform_add_devices(devices, ARRAY_SIZE(devices));
-}
-
-#ifdef CONFIG_ARCH_MX1ADS
-subsys_initcall(imx_init);
-#endif

@@ -120,6 +120,8 @@ static struct platform_device imx_uart2_device = {
 };
 
 static struct platform_device *devices[] __initdata = {
+	&imx_mmc_device,
+	&imxfb_device,
 	&cs89x0_device,
 	&imx_uart1_device,
 	&imx_uart2_device,

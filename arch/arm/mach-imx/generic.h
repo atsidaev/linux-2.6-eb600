@@ -14,3 +14,5 @@ extern void __init imx_init_irq(void);
 
 struct sys_timer;
 extern struct sys_timer imx_timer;
+extern struct platform_device imxfb_device;
+extern struct platform_device imx_mmc_device;
