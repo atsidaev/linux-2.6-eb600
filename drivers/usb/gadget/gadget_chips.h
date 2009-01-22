@@ -15,6 +15,18 @@
 #ifndef __GADGET_CHIPS_H
 #define __GADGET_CHIPS_H
 
+#ifdef CONFIG_USB_GADGET_JZ4740
+#define	gadget_is_jz4740(g)	!strcmp("jz4740_udc", (g)->name)
+#else
+#define	gadget_is_jz4740(g)	0
+#endif
+
+#ifdef CONFIG_USB_GADGET_JZ4730
+#define	gadget_is_jz4730(g)	!strcmp("jz4730_udc", (g)->name)
+#else
+#define	gadget_is_jz4730(g)	0
+#endif
+
 #ifdef CONFIG_USB_GADGET_NET2280
 #define	gadget_is_net2280(g)	!strcmp("net2280", (g)->name)
 #else
@@ -239,6 +251,10 @@ static inline int usb_gadget_controller_number(struct usb_gadget *gadget)
 		return 0x23;
 	else if (gadget_is_s1r72v17(gadget))
 		return 0x24;
+	else if (gadget_is_jz4730(gadget))
+		return 0x25;
+	else if (gadget_is_jz4740(gadget))
+		return 0x26;
 	return -ENOENT;
 }
 
