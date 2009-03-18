@@ -29,10 +29,6 @@ else
  endif
 endif
 
-pkgs := $(addprefix linux-image-$(LINUX_VERSION)-,$(flavours))
-pkgs := $(pkgs) $(addprefix linux-modules-$(LINUX_VERSION)-,$(flavours))
-pkgs := $(addprefix -p,$(pkgs))
-
 .NOTPARALLEL:
 
 export DH_OPTIONS
@@ -68,52 +64,41 @@ clean-patched: patch-stamp
 	$(MAKE) ARCH=$(kernel_arch) distclean
 	dh_clean 
 
-install: install-indep install-arch
-install-indep:
+install:
 	dh_testdir
 	dh_testroot
-	dh_clean -k -i 
-	dh_installdirs -i
-	dh_install -i
+	dh_prep
+	dh_installdirs -s
 	for FLAVOUR in $(flavours); do \
 		mkdir -p $(CURDIR)/debian/linux-image-$(LINUX_VERSION)-$$FLAVOUR/boot; \
 		install -m 0644 $(CURDIR)/build-$$FLAVOUR/zImage $(CURDIR)/debian/linux-image-$(LINUX_VERSION)-$$FLAVOUR/boot/vmlinuz-$(LINUX_VERSION)-$$FLAVOUR; \
 		install -m 0644 $(CURDIR)/build-$$FLAVOUR/System.map $(CURDIR)/debian/linux-image-$(LINUX_VERSION)-$$FLAVOUR/boot/System.map-$(LINUX_VERSION)-$$FLAVOUR; \
 		install -m 0644 $(CURDIR)/build-$$FLAVOUR/.config $(CURDIR)/debian/linux-image-$(LINUX_VERSION)-$$FLAVOUR/boot/config-$(LINUX_VERSION)-$$FLAVOUR; \
-	done
-
-install-arch:
-	dh_testdir
-	dh_testroot
-	dh_clean -k -s 
-	dh_installdirs -s
-	for FLAVOUR in $(flavours); do \
 		mkdir -p $(CURDIR)/debian/linux-modules-$(LINUX_VERSION)-$$FLAVOUR/; \
 		cp -r $(CURDIR)/build-$$FLAVOUR/lib $(CURDIR)/debian/linux-modules-$(LINUX_VERSION)-$$FLAVOUR/; \
 	done
 	dh_install -s
 
 binary-common:
-	dh_testdir
-	dh_testroot
-	dh_link
-	dh_strip
-	dh_compress 
-	dh_fixperms
-	dh_makeshlibs
-	dh_installdeb
-	dh_shlibdeps
-	dh_gencontrol
-	dh_md5sums
-	dh_builddeb
 
 binary-indep:
 
-binary-arch: build-arch install-arch
-ifneq (,$(flavours))
-	$(MAKE) -f debian/rules DH_OPTIONS="$(pkgs)" binary-common
-endif
+binary-arch: build install
+	dh_testdir -s
+	dh_testroot -s
+	dh_link -s
+	dh_strip -s
+	dh_compress -s
+	dh_fixperms -s
+	dh_makeshlibs -s
+	dh_installdeb -s
+	dh_shlibdeps -s
+	dh_gencontrol -s
+	dh_md5sums -s
+	dh_builddeb -s
+ifeq (,$(flavours))
 	touch debian/files # some archs don't produce kernels
+endif
 
 binary: binary-arch binary-indep
 .PHONY: build clean binary-indep binary-arch binary install install-indep install-arch configure
