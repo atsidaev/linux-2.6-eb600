@@ -23,7 +23,7 @@ else
     flavours :=
     kernel_arch := x86
    else
-    $(error Unknown architecture $(DEB_HOST_ARC))
+    $(error Unknown architecture $(DEB_HOST_ARCH))
    endif
   endif
  endif
