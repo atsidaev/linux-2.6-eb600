@@ -1,3 +1,10 @@
+linux-2.6 (2.6.28-4) asimov; urgency=low
+
+  * debian/rules: fixed problem in installing kernels in kernel-image
+    packages.
+
+ -- Mikhail Gusarov <dottedmag@dottedmag.net>  Wed, 18 Mar 2009 16:34:07 +0600
+
 linux-2.6 (2.6.28-3) asimov; urgency=low
   
   * First build for IPlinux-enabled OpenInkpot.
