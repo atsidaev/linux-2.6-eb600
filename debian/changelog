@@ -1,3 +1,9 @@
+linux-2.6 (2.6.28-3) asimov; urgency=low
+  
+  * First build for IPlinux-enabled OpenInkpot.
+
+ -- Mikhail Gusarov <dottedmag@dottedmag.net>  Wed, 18 Mar 2009 04:33:31 +0600
+
 linux-2.6 (2.6.28-2) asimov; urgency=low
 
   * s3cmci: Fix hangup in do_pio_write()

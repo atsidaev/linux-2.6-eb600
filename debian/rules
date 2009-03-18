@@ -1,21 +1,37 @@
 #!/usr/bin/make -f
-# -*- makefile -*-
-# Sample debian/rules that uses debhelper.
-#
-# This file was originally written by Joey Hess and Craig Small.
-# As a special exception, when this file is copied by dh-make into a
-# dh-make output file, you may use that output file without restriction.
-# This special exception was added by Craig Small in version 0.37 of dh-make.
-#
-# Modified to make a template file for a multi-binary package with separated
-# build-arch and build-indep targets  by Bill Allombert 2001
 
 # Uncomment this to turn on verbose mode.
-#export DH_VERBOSE=1
+# export DH_VERBOSE=1
 
-flavours := v3 v3ext nfsroot-v3 nfsroot-prs505
+DEB_HOST_ARCH ?= $(dpkg-architecture -qDEB_HOST_ARCH)
 
-# This has to be exported to make some magic below work.
+LINUX_VERSION = 2.6.28
+
+ifeq (armel,$(DEB_HOST_ARCH))
+  flavours := v3 v3ext nfsroot-v3 nfsroot-prs505
+  kernel_arch := arm
+else
+ ifeq (mipsel,$(DEB_HOST_ARCH))
+   flavours :=
+   kernel_arch := mips
+ else
+  ifeq (i386,$(DEB_HOST_ARCH))
+   flavours :=
+   kernel_arch := x86
+  else
+   ifeq (amd64,$(DEB_HOST_ARCH))
+    flavours :=
+    kernel_arch := x86
+   else
+    $(error Unknown architecture $(DEB_HOST_ARC))
+   endif
+  endif
+ endif
+endif
+
+pkgs := $(addprefix linux-image-$(LINUX_VERSION)-,$(flavours))
+pkgs := $(pkgs) $(addprefix linux-modules-$(LINUX_VERSION)-,$(flavours))
+pkgs := $(addprefix -p,$(pkgs))
 
 .NOTPARALLEL:
 
@@ -26,24 +42,20 @@ ifneq (,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))
 	MAKEFLAGS += -j$(NUMJOBS)
 endif
 
-
 include /usr/share/dpatch/dpatch.make
-
-LINUX_VERSION = 2.6.28
 
 build: build-arch build-indep
 
 build-arch: build-arch-stamp
 build-arch-stamp:
 	for FLAVOUR in $(flavours); do \
-		mkdir -p build-$$FLAVOUR-armel; \
-		cp $(CURDIR)/debian/config-$$FLAVOUR-armel $(CURDIR)/.config; \
-		$(MAKE) EXTRAVERSION=-$$FLAVOUR-$(DEB_HOST_ARCH) ARCH=arm CROSS_COMPILE=$(DEB_HOST_GNU_TYPE)- INSTALL_MOD_PATH=build-$$FLAVOUR-armel/ oldconfig; \
-		$(MAKE) EXTRAVERSION=-$$FLAVOUR-$(DEB_HOST_ARCH) ARCH=arm CROSS_COMPILE=$(DEB_HOST_GNU_TYPE)- INSTALL_MOD_PATH=build-$$FLAVOUR-armel/ zImage modules; \
-		$(MAKE) EXTRAVERSION=-$$FLAVOUR-$(DEB_HOST_ARCH) ARCH=arm CROSS_COMPILE=$(DEB_HOST_GNU_TYPE)- INSTALL_MOD_PATH=build-$$FLAVOUR-armel/ modules_install; \
-		cp $(CURDIR)/arch/arm/boot/zImage $(CURDIR)/.config $(CURDIR)/System.map $(CURDIR)/build-$$FLAVOUR-armel/; \
+		mkdir -p build-$$FLAVOUR && \
+		cp $(CURDIR)/debian/config-$$FLAVOUR $(CURDIR)/.config && \
+		$(MAKE) EXTRAVERSION=-$$FLAVOUR ARCH=$(kernel_arch) CROSS_COMPILE=$(DEB_HOST_GNU_TYPE)- INSTALL_MOD_PATH=build-$$FLAVOUR/ oldconfig && \
+		$(MAKE) EXTRAVERSION=-$$FLAVOUR ARCH=$(kernel_arch) CROSS_COMPILE=$(DEB_HOST_GNU_TYPE)- INSTALL_MOD_PATH=build-$$FLAVOUR/ zImage modules && \
+		$(MAKE) EXTRAVERSION=-$$FLAVOUR ARCH=$(kernel_arch) CROSS_COMPILE=$(DEB_HOST_GNU_TYPE)- INSTALL_MOD_PATH=build-$$FLAVOUR/ modules_install && \
+		cp $(CURDIR)/arch/$(kernel_arch)/boot/zImage $(CURDIR)/.config $(CURDIR)/System.map $(CURDIR)/build-$$FLAVOUR/; \
 	done
-
 	touch $@
 
 build-indep:
@@ -52,8 +64,8 @@ clean: clean-patched unpatch
 clean-patched: patch-stamp
 	dh_testdir
 	dh_testroot
-	rm -rf *-stamp build-*
-	$(MAKE) ARCH=arm distclean
+	rm -rf build-*
+	$(MAKE) ARCH=$(kernel_arch) distclean
 	dh_clean 
 
 install: install-indep install-arch
@@ -64,10 +76,10 @@ install-indep:
 	dh_installdirs -i
 	dh_install -i
 	for FLAVOUR in $(flavours); do \
-		mkdir -p $(CURDIR)/debian/linux-image-$(LINUX_VERSION)-$$FLAVOUR-$(DEB_HOST_ARCH)/boot; \
-		install -m 0644 $(CURDIR)/build-$$FLAVOUR-armel/zImage $(CURDIR)/debian/linux-image-$(LINUX_VERSION)-$$FLAVOUR-$(DEB_HOST_ARCH)/boot/vmlinuz-$(LINUX_VERSION)-$$FLAVOUR-$(DEB_HOST_ARCH); \
-		install -m 0644 $(CURDIR)/build-$$FLAVOUR-armel/System.map $(CURDIR)/debian/linux-image-$(LINUX_VERSION)-$$FLAVOUR-$(DEB_HOST_ARCH)/boot/System.map-$(LINUX_VERSION)-$$FLAVOUR-$(DEB_HOST_ARCH); \
-		install -m 0644 $(CURDIR)/build-$$FLAVOUR-armel/.config $(CURDIR)/debian/linux-image-$(LINUX_VERSION)-$$FLAVOUR-$(DEB_HOST_ARCH)/boot/config-$(LINUX_VERSION)-$$FLAVOUR-$(DEB_HOST_ARCH); \
+		mkdir -p $(CURDIR)/debian/linux-image-$(LINUX_VERSION)-$$FLAVOUR/boot; \
+		install -m 0644 $(CURDIR)/build-$$FLAVOUR/zImage $(CURDIR)/debian/linux-image-$(LINUX_VERSION)-$$FLAVOUR/boot/vmlinuz-$(LINUX_VERSION)-$$FLAVOUR; \
+		install -m 0644 $(CURDIR)/build-$$FLAVOUR/System.map $(CURDIR)/debian/linux-image-$(LINUX_VERSION)-$$FLAVOUR/boot/System.map-$(LINUX_VERSION)-$$FLAVOUR; \
+		install -m 0644 $(CURDIR)/build-$$FLAVOUR/.config $(CURDIR)/debian/linux-image-$(LINUX_VERSION)-$$FLAVOUR/boot/config-$(LINUX_VERSION)-$$FLAVOUR; \
 	done
 
 install-arch:
@@ -77,13 +89,10 @@ install-arch:
 	dh_installdirs -s
 	for FLAVOUR in $(flavours); do \
 		mkdir -p $(CURDIR)/debian/linux-modules-$(LINUX_VERSION)-$$FLAVOUR/; \
-		cp -r $(CURDIR)/build-$$FLAVOUR-armel/lib $(CURDIR)/debian/linux-modules-$(LINUX_VERSION)-$$FLAVOUR/; \
+		cp -r $(CURDIR)/build-$$FLAVOUR/lib $(CURDIR)/debian/linux-modules-$(LINUX_VERSION)-$$FLAVOUR/; \
 	done
 	dh_install -s
 
-# Must not depend on anything. This is to be called by
-# binary-arch/binary-indep
-# in another 'make' thread.
 binary-common:
 	dh_testdir
 	dh_testroot
@@ -98,11 +107,13 @@ binary-common:
 	dh_md5sums
 	dh_builddeb
 
-binary-indep: build-indep install-indep
-	$(MAKE) -f debian/rules DH_OPTIONS=-i binary-common
+binary-indep:
 
 binary-arch: build-arch install-arch
-	$(MAKE) -f debian/rules DH_OPTIONS=-s binary-common
+ifneq (,$(flavours))
+	$(MAKE) -f debian/rules DH_OPTIONS="$(pkgs)" binary-common
+endif
+	touch debian/files # some archs don't produce kernels
 
 binary: binary-arch binary-indep
 .PHONY: build clean binary-indep binary-arch binary install install-indep install-arch configure
