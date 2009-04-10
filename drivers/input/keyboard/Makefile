@@ -31,4 +31,3 @@ obj-$(CONFIG_KEYBOARD_MAPLE)		+= maple_keyb.o
 obj-$(CONFIG_KEYBOARD_BFIN)		+= bf54x-keys.o
 obj-$(CONFIG_KEYBOARD_SH_KEYSC)		+= sh_keysc.o
 obj-$(CONFIG_KEYBOARD_LBOOK_V3)		+= lbookv3_keys.o
-obj-$(CONFIG_KEYBOARD_N516)		+= n516-keys.o
