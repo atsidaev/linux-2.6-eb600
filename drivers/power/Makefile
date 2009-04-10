@@ -27,3 +27,4 @@ obj-$(CONFIG_BATTERY_BQ27x00)	+= bq27x00_battery.o
 obj-$(CONFIG_BATTERY_DA9030)	+= da9030_battery.o
 obj-$(CONFIG_CHARGER_PCF50633)	+= pcf50633-charger.o
 obj-$(CONFIG_BATTERY_LBOOKV3)	+= lbookv3_battery.o
+obj-$(CONFIG_N516_USB_POWER)	+= n516-usb.o
