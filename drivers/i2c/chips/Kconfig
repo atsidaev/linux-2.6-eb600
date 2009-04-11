@@ -105,8 +105,8 @@ config SENSORS_TSL2550
 config N516_LPC
 	tristate "N516 keys & power controller"
 	depends on I2C
-	select INPUT
-	select POWER_SUPPLY
+	depends on INPUT
+	depends on POWER_SUPPLY
 	help
 	  N516 keyboard & power controller driver
 
