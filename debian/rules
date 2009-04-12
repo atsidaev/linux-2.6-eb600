@@ -5,14 +5,14 @@
 
 DEB_HOST_ARCH ?= $(dpkg-architecture -qDEB_HOST_ARCH)
 
-LINUX_VERSION = 2.6.28
+LINUX_VERSION = 2.6.29
 
 ifeq (armel,$(DEB_HOST_ARCH))
   flavours := v3 v3ext nfsroot-v3 nfsroot-prs505
   kernel_arch := arm
 else
  ifeq (mipsel,$(DEB_HOST_ARCH))
-   flavours :=
+   flavours := n516
    kernel_arch := mips
  else
   ifeq (i386,$(DEB_HOST_ARCH))
