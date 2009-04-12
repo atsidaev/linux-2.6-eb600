@@ -4,7 +4,7 @@ Priority: optional
 Maintainer: Yauhen Kharuzhy <jekhor@gmail.com>
 Uploaders: Mikhail Gusarov <dottedmag@dottedmag.net>
 Build-Depends: debhelper (>= 7), dpatch, module-init-tools
-XCS-Cross-Host-Build-Depends: debhelper (>= 7), dpatch, module-init-tools
+XCS-Cross-Host-Build-Depends: debhelper (>= 7), dpatch, module-init-tools, uboot-mkimage
 Standards-Version: 3.8.0
 
 Package: linux-image-2.6.29-v3

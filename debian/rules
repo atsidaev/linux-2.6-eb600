@@ -47,10 +47,11 @@ build-arch-stamp:
 	for FLAVOUR in $(flavours); do \
 		mkdir -p build-$$FLAVOUR && \
 		cp $(CURDIR)/debian/config-$$FLAVOUR $(CURDIR)/.config && \
+		if [ "$$FLAVOUR" == "n516" ]; then image=uImage; else image=zImage; fi && \
 		$(MAKE) EXTRAVERSION=-$$FLAVOUR ARCH=$(kernel_arch) CROSS_COMPILE=$(DEB_HOST_GNU_TYPE)- INSTALL_MOD_PATH=build-$$FLAVOUR/ oldconfig && \
-		$(MAKE) EXTRAVERSION=-$$FLAVOUR ARCH=$(kernel_arch) CROSS_COMPILE=$(DEB_HOST_GNU_TYPE)- INSTALL_MOD_PATH=build-$$FLAVOUR/ zImage modules && \
+		$(MAKE) EXTRAVERSION=-$$FLAVOUR ARCH=$(kernel_arch) CROSS_COMPILE=$(DEB_HOST_GNU_TYPE)- INSTALL_MOD_PATH=build-$$FLAVOUR/ $$image modules && \
 		$(MAKE) EXTRAVERSION=-$$FLAVOUR ARCH=$(kernel_arch) CROSS_COMPILE=$(DEB_HOST_GNU_TYPE)- INSTALL_MOD_PATH=build-$$FLAVOUR/ modules_install && \
-		cp $(CURDIR)/arch/$(kernel_arch)/boot/zImage $(CURDIR)/.config $(CURDIR)/System.map $(CURDIR)/build-$$FLAVOUR/; \
+		cp $(CURDIR)/arch/$(kernel_arch)/boot/$$image $(CURDIR)/.config $(CURDIR)/System.map $(CURDIR)/build-$$FLAVOUR/; \
 	done
 	touch $@
 
@@ -71,7 +72,8 @@ install:
 	dh_installdirs -s
 	for FLAVOUR in $(flavours); do \
 		mkdir -p $(CURDIR)/debian/linux-image-$(LINUX_VERSION)-$$FLAVOUR/boot; \
-		install -m 0644 $(CURDIR)/build-$$FLAVOUR/zImage $(CURDIR)/debian/linux-image-$(LINUX_VERSION)-$$FLAVOUR/boot/vmlinuz-$(LINUX_VERSION)-$$FLAVOUR; \
+		if [ "$$FLAVOUR" == "n516" ]; then image=uImage; else image=zImage; fi && \
+		install -m 0644 $(CURDIR)/build-$$FLAVOUR/$$image $(CURDIR)/debian/linux-image-$(LINUX_VERSION)-$$FLAVOUR/boot/vmlinuz-$(LINUX_VERSION)-$$FLAVOUR; \
 		install -m 0644 $(CURDIR)/build-$$FLAVOUR/System.map $(CURDIR)/debian/linux-image-$(LINUX_VERSION)-$$FLAVOUR/boot/System.map-$(LINUX_VERSION)-$$FLAVOUR; \
 		install -m 0644 $(CURDIR)/build-$$FLAVOUR/.config $(CURDIR)/debian/linux-image-$(LINUX_VERSION)-$$FLAVOUR/boot/config-$(LINUX_VERSION)-$$FLAVOUR; \
 		mkdir -p $(CURDIR)/debian/linux-modules-$(LINUX_VERSION)-$$FLAVOUR/; \
