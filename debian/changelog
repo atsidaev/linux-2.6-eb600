@@ -1,3 +1,10 @@
+linux-2.6 (2.6.29-1) asimov; urgency=low
+
+  * New upstream version
+  * Merge N516 support
+
+ -- Yauhen Kharuzhy <jekhor@gmail.com>  Sun, 12 Apr 2009 20:51:49 +0300
+
 linux-2.6 (2.6.28-4) asimov; urgency=low
 
   * debian/rules: fixed problem in installing kernels in kernel-image
