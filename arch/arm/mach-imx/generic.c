@@ -248,7 +248,7 @@ void __init imx_set_mmc_info(struct imxmmc_platform_data *info)
 
 static struct imx_fb_platform_data imx_fb_info;
 
-void __init set_imx_fb_info(struct imx_fb_platform_data *hard_imx_fb_info)
+void set_imx_fb_info(struct imx_fb_platform_data *hard_imx_fb_info)
 {
 	memcpy(&imx_fb_info,hard_imx_fb_info,sizeof(struct imx_fb_platform_data));
 }
