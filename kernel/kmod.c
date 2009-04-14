@@ -270,7 +270,7 @@ static void __call_usermodehelper(struct work_struct *work)
 	}
 }
 
-#ifdef CONFIG_PM_SLEEP
+#ifdef CONFIG_PM
 /*
  * If set, call_usermodehelper_exec() will exit immediately returning -EBUSY
  * (used for preventing user land processes from being created after the user
@@ -293,37 +293,39 @@ static DECLARE_WAIT_QUEUE_HEAD(running_helpers_waitq);
  */
 #define RUNNING_HELPERS_TIMEOUT	(5 * HZ)
 
-/**
- * usermodehelper_disable - prevent new helpers from being started
- */
-int usermodehelper_disable(void)
+static int usermodehelper_pm_callback(struct notifier_block *nfb,
+					unsigned long action,
+					void *ignored)
 {
 	long retval;
 
-	usermodehelper_disabled = 1;
-	smp_mb();
-	/*
-	 * From now on call_usermodehelper_exec() won't start any new
-	 * helpers, so it is sufficient if running_helpers turns out to
-	 * be zero at one point (it may be increased later, but that
-	 * doesn't matter).
-	 */
-	retval = wait_event_timeout(running_helpers_waitq,
+	switch (action) {
+	case PM_HIBERNATION_PREPARE:
+	case PM_SUSPEND_PREPARE:
+		usermodehelper_disabled = 1;
+		smp_mb();
+		/*
+		 * From now on call_usermodehelper_exec() won't start any new
+		 * helpers, so it is sufficient if running_helpers turns out to
+		 * be zero at one point (it may be increased later, but that
+		 * doesn't matter).
+		 */
+		retval = wait_event_timeout(running_helpers_waitq,
 					atomic_read(&running_helpers) == 0,
 					RUNNING_HELPERS_TIMEOUT);
-	if (retval)
-		return 0;
+		if (retval) {
+			return NOTIFY_OK;
+		} else {
+			usermodehelper_disabled = 0;
+			return NOTIFY_BAD;
+		}
+	case PM_POST_HIBERNATION:
+	case PM_POST_SUSPEND:
+		usermodehelper_disabled = 0;
+		return NOTIFY_OK;
+	}
 
-	usermodehelper_disabled = 0;
-	return -EAGAIN;
-}
-
-/**
- * usermodehelper_enable - allow new helpers to be started again
- */
-void usermodehelper_enable(void)
-{
-	usermodehelper_disabled = 0;
+	return NOTIFY_DONE;
 }
 
 static void helper_lock(void)
@@ -337,12 +339,18 @@ static void helper_unlock(void)
 	if (atomic_dec_and_test(&running_helpers))
 		wake_up(&running_helpers_waitq);
 }
-#else /* CONFIG_PM_SLEEP */
+
+static void register_pm_notifier_callback(void)
+{
+	pm_notifier(usermodehelper_pm_callback, 0);
+}
+#else /* CONFIG_PM */
 #define usermodehelper_disabled	0
 
 static inline void helper_lock(void) {}
 static inline void helper_unlock(void) {}
-#endif /* CONFIG_PM_SLEEP */
+static inline void register_pm_notifier_callback(void) {}
+#endif /* CONFIG_PM */
 
 /**
  * call_usermodehelper_setup - prepare to call a usermode helper
@@ -523,4 +531,5 @@ void __init usermodehelper_init(void)
 {
 	khelper_wq = create_singlethread_workqueue("khelper");
 	BUG_ON(!khelper_wq);
+	register_pm_notifier_callback();
 }
