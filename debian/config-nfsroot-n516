@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # Linux kernel version: 2.6.29.1
-# Tue Apr 14 08:58:17 2009
+# Sun Apr 12 20:48:11 2009
 #
 CONFIG_MIPS=y
 
@@ -544,7 +544,7 @@ CONFIG_PHYLIB=y
 # CONFIG_MDIO_BITBANG is not set
 CONFIG_NET_ETHERNET=y
 CONFIG_MII=y
-CONFIG_JZCS8900=m
+CONFIG_JZCS8900=y
 # CONFIG_AX88796 is not set
 # CONFIG_SMC91X is not set
 # CONFIG_DM9000 is not set
