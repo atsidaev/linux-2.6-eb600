@@ -305,6 +305,8 @@ static int suspend_enter(suspend_state_t state)
 		sysdev_resume();
 	}
 
+	usermodehelper_enable();
+
 	device_power_up(PMSG_RESUME);
  Done:
 	arch_suspend_enable_irqs();
