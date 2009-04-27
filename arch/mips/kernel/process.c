@@ -107,7 +107,9 @@ void __noreturn cpu_idle(void)
 
 			smtc_idle_loop_hook();
 #endif
+#ifdef CONFIG_PM_AUTOSUSPEND
 			check_for_autosuspend();
+#endif
 			if (cpu_wait)
 				(*cpu_wait)();
 		}
