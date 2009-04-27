@@ -1,3 +1,10 @@
+linux-2.6 (2.6.29-6) asimov; urgency=low
+
+  * jz4740_udc: various fixes
+  * PM: dirty hack for make hotplug working during resume process
+
+ -- Yauhen Kharuzhy <jekhor@gmail.com>  Mon, 27 Apr 2009 17:06:18 +0300
+
 linux-2.6 (2.6.29-5) asimov; urgency=low
 
   * metronomefb: Set RST to 0 on suspend
