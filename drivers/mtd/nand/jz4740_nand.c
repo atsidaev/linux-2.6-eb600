@@ -64,6 +64,7 @@ static struct nand_ecclayout nand_oob_rs64 = {
 
 #endif
 
+static struct mtd_partition	*jz_parts = NULL;
 
 static void jz_hwcontrol(struct mtd_info *mtd, int dat,
 			 unsigned int ctrl)
@@ -444,6 +445,7 @@ static int __devinit jz4740_nand_probe(struct platform_device *pdev)
 	struct nand_chip *this;
 	struct mtd_info *jz_mtd;
 	struct jz4740_pdata *pdata = pdev->dev.platform_data;
+	int res = 0;
 
 
 	/* Allocate memory for MTD device structure and private data */
@@ -462,6 +464,7 @@ static int __devinit jz4740_nand_probe(struct platform_device *pdev)
 	/* Link the private data with the MTD structure */
 	jz_mtd->priv = this;
 	jz_mtd->owner = THIS_MODULE;
+	jz_mtd->name = dev_name(&pdev->dev);
 
 	/* Set & initialize NAND Flash controller */
 	jz_device_setup();
@@ -507,9 +510,25 @@ static int __devinit jz4740_nand_probe(struct platform_device *pdev)
 		return -ENXIO;
 	}
 
-	add_mtd_partitions(jz_mtd, pdata->partitions, pdata->nr_partitions);
+#ifdef CONFIG_MTD_PARTITIONS
+	if (pdata->part_probe_types) {
+		res = parse_mtd_partitions(jz_mtd,
+				pdata->part_probe_types,
+				&jz_parts, 0);
+		if (res > 0) {
+			add_mtd_partitions(jz_mtd, jz_parts, res);
+			return 0;
+		}
+	}
 
-	return 0;
+	if (pdata->partitions)
+		res = add_mtd_partitions(jz_mtd, pdata->partitions, pdata->nr_partitions);
+	else
+#endif
+		res = add_mtd_device(jz_mtd);
+
+
+	return res;
 }
 
 /*
@@ -521,6 +540,10 @@ static int __devexit jz4740_nand_remove(struct platform_device *pdev)
 
 	nand_release(jz_mtd);
 
+#ifdef CONFIG_MTD_PARTITIONS
+	if (jz_parts)
+		kfree(jz_parts);
+#endif
 	platform_set_drvdata(pdev, NULL);
 
 	/* Free the MTD device structure */

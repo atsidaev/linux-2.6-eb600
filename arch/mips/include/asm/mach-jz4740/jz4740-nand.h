@@ -19,6 +19,7 @@
 struct jz4740_pdata {
 	struct mtd_partition *partitions;
 	unsigned int nr_partitions;
+	const char **part_probe_types;
 };
 
 #endif /* _ASM_MACH_JZ4740_JZ4740_NAND_H_ */
