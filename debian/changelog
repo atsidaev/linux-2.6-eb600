@@ -1,3 +1,13 @@
+linux-2.6 (2.6.29-7) asimov; urgency=low
+
+  * jz4740_nand: Add support of cmdline partition parsing
+  * N516: Change NAND layout from static table to cmdline parsing
+  * metronomefb: Remove __devinit from load_waveform definition
+  * N516: Update config
+  * N516: Disable display controller at board initialization
+
+ -- Yauhen Kharuzhy <jekhor@gmail.com>  Sun, 17 May 2009 22:27:23 +0300
+
 linux-2.6 (2.6.29-6) asimov; urgency=low
 
   * jz4740_udc: various fixes
