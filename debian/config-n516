@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # Linux kernel version: 2.6.29.1
-# Tue Apr 14 13:20:11 2009
+# Sun May 17 22:14:28 2009
 #
 CONFIG_MIPS=y
 
@@ -400,7 +400,7 @@ CONFIG_MTD=y
 CONFIG_MTD_PARTITIONS=y
 # CONFIG_MTD_TESTS is not set
 # CONFIG_MTD_REDBOOT_PARTS is not set
-# CONFIG_MTD_CMDLINE_PARTS is not set
+CONFIG_MTD_CMDLINE_PARTS=y
 # CONFIG_MTD_AR7_PARTS is not set
 # CONFIG_MTD_SDM_PARTS is not set
 
