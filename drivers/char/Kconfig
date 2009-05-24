@@ -823,11 +823,6 @@ config RTC_PCF8563
 	help
 	  Philips PCF8563 Real Time Clock (I2C Bus)
 
-config RTC_JZ
-	bool 'Jz4740 On-Chip Real Time Clock'
-	help
-	  Jz4740 On-Chip Real Time Clock
-
 config JS_RTC
 	tristate "Enhanced Real Time Clock Support"
 	depends on SPARC32 && PCI
