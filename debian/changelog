@@ -1,3 +1,9 @@
+linux-2.6 (2.6.29-9) asimov; urgency=low
+
+  * N516: Enable UBI MTD emulation
+
+ -- Yauhen Kharuzhy <jekhor@gmail.com>  Mon, 15 Jun 2009 13:26:02 +0300
+
 linux-2.6 (2.6.29-8) asimov; urgency=low
 
   * JZ: Move JZ RTC driver to proper location and port it to new API
