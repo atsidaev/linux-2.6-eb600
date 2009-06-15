@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # Linux kernel version: 2.6.29.1
-# Thu Jun  4 17:41:38 2009
+# Mon Jun 15 13:13:55 2009
 #
 CONFIG_MIPS=y
 
@@ -484,7 +484,7 @@ CONFIG_MTD_HW_RS_ECC=y
 CONFIG_MTD_UBI=y
 CONFIG_MTD_UBI_WL_THRESHOLD=256
 CONFIG_MTD_UBI_BEB_RESERVE=1
-# CONFIG_MTD_UBI_GLUEBI is not set
+CONFIG_MTD_UBI_GLUEBI=y
 
 #
 # UBI debugging options
