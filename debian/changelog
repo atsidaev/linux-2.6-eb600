@@ -1,3 +1,16 @@
+linux-2.6 (2.6.29-10) asimov; urgency=low
+
+  [ Yauhen Kharuzhy ]
+  * jz4740_udc: Fix Oops at module unloading
+  * jz4740_udc: Temporary disable DMA by default. Add some debug
+  * Remove display clearing at driver initialization
+  * n516-lpc: Get initial battery level from module parameter
+
+  [ Mikhail Gusarov ]
+  * lbookv3_keys: Remap UP/DOWN keys to RIGHT/LEFT keys
+
+ -- Yauhen Kharuzhy <jekhor@gmail.com>  Thu, 09 Jul 2009 23:36:28 +0300
+
 linux-2.6 (2.6.29-9) asimov; urgency=low
 
   * N516: Enable UBI MTD emulation
