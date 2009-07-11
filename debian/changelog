@@ -1,3 +1,10 @@
+linux-2.6 (2.6.29-11) asimov; urgency=low
+
+  * jz4740_udc: Fix gadget driver unbinding. Fix data part of Control
+    Requests handling
+
+ -- Yauhen Kharuzhy <jekhor@gmail.com>  Sat, 11 Jul 2009 16:30:21 +0300
+
 linux-2.6 (2.6.29-10) asimov; urgency=low
 
   [ Yauhen Kharuzhy ]
