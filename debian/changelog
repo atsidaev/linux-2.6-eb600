@@ -1,3 +1,9 @@
+linux-2.6 (2.6.29-12) asimov; urgency=low
+
+  * N516: Enable g_file_storage module
+
+ -- Yauhen Kharuzhy <jekhor@gmail.com>  Tue, 14 Jul 2009 00:35:42 +0300
+
 linux-2.6 (2.6.29-11) asimov; urgency=low
 
   * jz4740_udc: Fix gadget driver unbinding. Fix data part of Control
