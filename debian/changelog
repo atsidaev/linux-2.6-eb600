@@ -1,3 +1,11 @@
+linux-2.6 (2.6.29-16) asimov; urgency=low
+
+  * n516-lpc: Fix emitting a lot of uevents on battery discharge (bug
+    #318)
+  * n516-lpc: Change battery levels map
+
+ -- Yauhen Kharuzhy <jekhor@gmail.com>  Fri, 24 Jul 2009 10:55:42 +0300
+
 linux-2.6 (2.6.29-15) asimov; urgency=low
 
   * n516-lpc: Fix kernel oops at driver initializing
