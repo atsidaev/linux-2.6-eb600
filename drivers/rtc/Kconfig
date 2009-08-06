@@ -451,6 +451,7 @@ config RTC_DRV_DS1742
 
 config RTC_DRV_JZ
 	tristate "JZ 47x0 SoC RTC"
+	depends on JZSOC
 	help
 	  If you say yes there you get support for the
 	  RTC on Ingenic JZ47x0 SoCs.
