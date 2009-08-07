@@ -1,3 +1,22 @@
+linux-2.6 (2.6.29-17) asimov; urgency=low
+
+  [ Mikhail Gusarov ]
+  * Make RTC_DRV_JZ depend on JZSOC
+  * eink_apollofb: make default deferred_io delay configurable
+
+  [ Yauhen Kharuzhy ]
+  * JZ4740: Make sound drivers compilable
+
+  [ Mikhail Gusarov ]
+  * Update debian/config-*v3* with FB_EINK_APOLLO_DEFAULT_DELAY=300
+
+  [ Yauhen Kharuzhy ]
+  * lbookv3_keys: Add generation of longpress events to power button
+  * video: Change default value for FB_EINK_APOLLO_DEFAULT_DELAY to 200
+    ms
+
+ -- Yauhen Kharuzhy <jekhor@gmail.com>  Fri, 07 Aug 2009 16:31:55 +0300
+
 linux-2.6 (2.6.29-16) asimov; urgency=low
 
   * n516-lpc: Fix emitting a lot of uevents on battery discharge (bug
