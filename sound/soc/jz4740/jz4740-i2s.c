@@ -10,7 +10,6 @@
 #include <linux/module.h>
 #include <linux/device.h>
 #include <linux/delay.h>
-#include <sound/driver.h>
 #include <sound/core.h>
 #include <sound/pcm.h>
 #include <sound/pcm_params.h>
@@ -42,7 +41,7 @@ static struct jz4740_pcm_dma_params jz4740_i2s_pcm_stereo_in = {
 	.dma_size	= 2,
 };
 
-static int jz4740_i2s_startup(struct snd_pcm_substream *substream)
+static int jz4740_i2s_startup(struct snd_pcm_substream *substream, struct snd_soc_dai *dai)
 {
 	/*struct snd_soc_pcm_runtime *rtd = substream->private_data;
 	  struct snd_soc_cpu_dai *cpu_dai = rtd->dai->cpu_dai;*/
@@ -50,7 +49,7 @@ static int jz4740_i2s_startup(struct snd_pcm_substream *substream)
 	return 0;
 }
 
-static int jz4740_i2s_set_dai_fmt(struct snd_soc_cpu_dai *cpu_dai,
+static int jz4740_i2s_set_dai_fmt(struct snd_soc_dai *cpu_dai,
 		unsigned int fmt)
 {
 	/* interface format */
@@ -81,7 +80,7 @@ static int jz4740_i2s_set_dai_fmt(struct snd_soc_cpu_dai *cpu_dai,
 /* 
 * Set Jz4740 Clock source
 */
-static int jz4740_i2s_set_dai_sysclk(struct snd_soc_cpu_dai *cpu_dai,
+static int jz4740_i2s_set_dai_sysclk(struct snd_soc_dai *cpu_dai,
 		int clk_id, unsigned int freq, int dir)
 {
 	return 0;
@@ -124,10 +123,10 @@ static void jz4740_snd_rx_ctrl(int on)
 }
 
 static int jz4740_i2s_hw_params(struct snd_pcm_substream *substream,
-				struct snd_pcm_hw_params *params)
+				struct snd_pcm_hw_params *params, struct snd_soc_dai *dai)
 {
 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
-	struct snd_soc_cpu_dai *cpu_dai = rtd->dai->cpu_dai;
+	struct snd_soc_dai *cpu_dai = rtd->dai->cpu_dai;
 	int channels = params_channels(params);
 
 	jz4740_snd_rx_ctrl(0);
@@ -161,7 +160,7 @@ static int jz4740_i2s_hw_params(struct snd_pcm_substream *substream,
 	return 0;
 }
 
-static int jz4740_i2s_trigger(struct snd_pcm_substream *substream, int cmd)
+static int jz4740_i2s_trigger(struct snd_pcm_substream *substream, int cmd, struct snd_soc_dai *dai)
 {
 	int ret = 0;
 	switch (cmd) {
@@ -188,7 +187,7 @@ static int jz4740_i2s_trigger(struct snd_pcm_substream *substream, int cmd)
 	return ret;
 }
 
-static void jz4740_i2s_shutdown(struct snd_pcm_substream *substream)
+static void jz4740_i2s_shutdown(struct snd_pcm_substream *substream, struct snd_soc_dai *dai)
 {
 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK) {
 	} else {
@@ -197,7 +196,7 @@ static void jz4740_i2s_shutdown(struct snd_pcm_substream *substream)
 	return;
 }
 
-static int jz4740_i2s_probe(struct platform_device *pdev)
+static int jz4740_i2s_probe(struct platform_device *pdev, struct snd_soc_dai *dai)
 {
 	__i2s_internal_codec();
 	__i2s_as_slave();
@@ -231,8 +230,7 @@ static int jz4740_i2s_probe(struct platform_device *pdev)
 }
 
 #ifdef CONFIG_PM
-static int jz4740_i2s_suspend(struct platform_device *dev,
-	struct snd_soc_cpu_dai *dai)
+static int jz4740_i2s_suspend(struct snd_soc_dai *dai)
 {
 	if (!dai->active)
 		return 0;
@@ -240,8 +238,7 @@ static int jz4740_i2s_suspend(struct platform_device *dev,
 	return 0;
 }
 
-static int jz4740_i2s_resume(struct platform_device *pdev,
-	struct snd_soc_cpu_dai *dai)
+static int jz4740_i2s_resume(struct snd_soc_dai *dai)
 {
 	if (!dai->active)
 		return 0;
@@ -259,10 +256,9 @@ static int jz4740_i2s_resume(struct platform_device *pdev,
 		SNDRV_PCM_RATE_32000 | SNDRV_PCM_RATE_44100 |\
 		SNDRV_PCM_RATE_48000)
 
-struct snd_soc_cpu_dai jz4740_i2s_dai = {
+struct snd_soc_dai jz4740_i2s_dai = {
 	.name = "jz4740-i2s",
 	.id = 0,
-	.type = SND_SOC_DAI_I2S,
 	.probe = jz4740_i2s_probe,
 	.suspend = jz4740_i2s_suspend,
 	.resume = jz4740_i2s_resume,
@@ -270,18 +266,19 @@ struct snd_soc_cpu_dai jz4740_i2s_dai = {
 		.channels_min = 1,
 		.channels_max = 2,
 		.rates = JZ4740_I2S_RATES,
-		.formats = SNDRV_PCM_FMTBIT_S8 | SNDRV_PCM_FMTBIT_S16_LE,}, 
+		.formats = SNDRV_PCM_FMTBIT_S8 | SNDRV_PCM_FMTBIT_S16_LE,
+	},
 	.capture = {
 		.channels_min = 1,
 		.channels_max = 2,
 		.rates = JZ4740_I2S_RATES,
-		.formats = SNDRV_PCM_FMTBIT_S8 | SNDRV_PCM_FMTBIT_S16_LE,},
+		.formats = SNDRV_PCM_FMTBIT_S8 | SNDRV_PCM_FMTBIT_S16_LE,
+	},
 	.ops = {
 		.startup = jz4740_i2s_startup,
 		.shutdown = jz4740_i2s_shutdown,
 		.trigger = jz4740_i2s_trigger,
-		.hw_params = jz4740_i2s_hw_params,},
-	.dai_ops = {
+		.hw_params = jz4740_i2s_hw_params,
 		.set_fmt = jz4740_i2s_set_dai_fmt,
 		.set_sysclk = jz4740_i2s_set_dai_sysclk,
 	},

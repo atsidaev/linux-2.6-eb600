@@ -10,7 +10,6 @@
 #include <linux/delay.h>
 #include <linux/pm.h>
 #include <linux/platform_device.h>
-#include <sound/driver.h>
 #include <sound/core.h>
 #include <sound/pcm.h>
 #include <sound/pcm_params.h>
@@ -166,7 +165,7 @@ static const struct snd_soc_dapm_widget jzcodec_dapm_widgets[] = {
 	SND_SOC_DAPM_INPUT("LLINEIN"),
 };
 
-static const char *intercon[][3] = {
+static const struct snd_soc_dapm_route intercon[] = {
 	/* output mixer */
 	{"Output Mixer", "Line Bypass Switch", "Line Input"},
 	{"Output Mixer", "HiFi Playback Switch", "DAC"},
@@ -187,9 +186,6 @@ static const char *intercon[][3] = {
 	{"Line Input", NULL, "LLINEIN"},
 	{"Line Input", NULL, "RLINEIN"},
 	{"Mic Bias", NULL, "MICIN"},
-
-	/* terminator */
-	{NULL, NULL, NULL},
 };
 
 static int jzcodec_add_widgets(struct snd_soc_codec *codec)
@@ -202,17 +198,14 @@ static int jzcodec_add_widgets(struct snd_soc_codec *codec)
 	}
 
 	/* set up audio path interconnects */
-	for(i = 0; intercon[i][0] != NULL; i++) {
-		snd_soc_dapm_connect_input(codec, intercon[i][0],
-			intercon[i][1], intercon[i][2]);
-	}
+	snd_soc_dapm_add_routes(codec, intercon, ARRAY_SIZE(intercon));
 
 	snd_soc_dapm_new_widgets(codec);
 	return 0;
 }
 
 static int jzcodec_hw_params(struct snd_pcm_substream *substream,
-	struct snd_pcm_hw_params *params)
+	struct snd_pcm_hw_params *params, struct snd_soc_dai *dai)
 {
 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
 	struct snd_soc_device *socdev = rtd->socdev;
@@ -256,7 +249,7 @@ static int jzcodec_hw_params(struct snd_pcm_substream *substream,
 	return 0;
 }
 
-static int jzcodec_pcm_trigger(struct snd_pcm_substream *substream, int cmd)
+static int jzcodec_pcm_trigger(struct snd_pcm_substream *substream, int cmd, struct snd_soc_dai *dai)
 {
 	int ret = 0;
 	u16 val;
@@ -316,7 +309,7 @@ static int jzcodec_pcm_trigger(struct snd_pcm_substream *substream, int cmd)
 	return ret;
 }
 
-static int jzcodec_pcm_prepare(struct snd_pcm_substream *substream)
+static int jzcodec_pcm_prepare(struct snd_pcm_substream *substream, struct snd_soc_dai *dai)
 {
 	/*struct snd_soc_pcm_runtime *rtd = substream->private_data;
 	struct snd_soc_device *socdev = rtd->socdev;
@@ -325,7 +318,7 @@ static int jzcodec_pcm_prepare(struct snd_pcm_substream *substream)
 	return 0;
 }
 
-static void jzcodec_shutdown(struct snd_pcm_substream *substream)
+static void jzcodec_shutdown(struct snd_pcm_substream *substream, struct snd_soc_dai *dai)
 {
 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
 	struct snd_soc_device *socdev = rtd->socdev;
@@ -337,7 +330,7 @@ static void jzcodec_shutdown(struct snd_pcm_substream *substream)
 	}
 }
 
-static int jzcodec_mute(struct snd_soc_codec_dai *dai, int mute)
+static int jzcodec_mute(struct snd_soc_dai *dai, int mute)
 {
 	struct snd_soc_codec *codec = dai->codec;
 	u16 reg_val = jzcodec_read_reg_cache(codec, ICODEC_1_LOW);
@@ -353,7 +346,7 @@ static int jzcodec_mute(struct snd_soc_codec_dai *dai, int mute)
 	return 0;
 }
 
-static int jzcodec_set_dai_sysclk(struct snd_soc_codec_dai *codec_dai,
+static int jzcodec_set_dai_sysclk(struct snd_soc_dai *codec_dai,
 		int clk_id, unsigned int freq, int dir)
 {
 	struct snd_soc_codec *codec = codec_dai->codec;
@@ -365,7 +358,7 @@ static int jzcodec_set_dai_sysclk(struct snd_soc_codec_dai *codec_dai,
 /*
  * Set's ADC and Voice DAC format. called by pavo_hw_params() in pavo.c
  */
-static int jzcodec_set_dai_fmt(struct snd_soc_codec_dai *codec_dai,
+static int jzcodec_set_dai_fmt(struct snd_soc_dai *codec_dai,
 		unsigned int fmt)
 {
 	/* struct snd_soc_codec *codec = codec_dai->codec; */
@@ -421,20 +414,19 @@ static int jzcodec_set_dai_fmt(struct snd_soc_codec_dai *codec_dai,
 	return 0;
 }
 
-static int jzcodec_dapm_event(struct snd_soc_codec *codec, int event)
+static int jzcodec_set_bias_level(struct snd_soc_codec *codec, enum snd_soc_bias_level level)
 {
 /*	u16 reg_val; */
 
-	switch (event) {
-	case SNDRV_CTL_POWER_D0: /* full On */
+	switch (level) {
+	case SND_SOC_BIAS_ON: /* full On */
 		/* vref/mid, osc on, dac unmute */
 		/* u16 reg_val = jzcodec_read_reg_cache(codec, ICODEC_1_LOW); */
 		/* jzcodec_write(codec, 0, val); */
 		break;
-	case SNDRV_CTL_POWER_D1: /* partial On */
-	case SNDRV_CTL_POWER_D2: /* partial On */
+	case SND_SOC_BIAS_PREPARE: /* partial On */
 		break;
-	case SNDRV_CTL_POWER_D3hot: /* Off, with power */
+	case SND_SOC_BIAS_STANDBY: /* Off, with power */
 		/* everything off except vref/vmid, */
 		/*reg_val = 0x0800;
 		jzcodec_write_reg_cache(codec, ICODEC_1_LOW, reg_val);
@@ -454,7 +446,7 @@ static int jzcodec_dapm_event(struct snd_soc_codec *codec, int event)
 		jzcodec_write_reg_cache(codec, ICODEC_1_HIGH, reg_val);
 		REG_ICDC_CDCCR1 = jzcodec_reg[0];*/
 		break;
-	case SNDRV_CTL_POWER_D3cold: /* Off, without power */
+	case SND_SOC_BIAS_OFF: /* Off, without power */
 		/* everything off, dac mute, inactive */
 		/*reg_val = 0x2302;
 		jzcodec_write(codec, ICODEC_1_LOW, reg_val);
@@ -467,7 +459,7 @@ static int jzcodec_dapm_event(struct snd_soc_codec *codec, int event)
 		jzcodec_write(codec, ICODEC_1_HIGH, reg_val);*/
 		break;
 	}
-	codec->dapm_state = event;
+	codec->bias_level = level;
 	return 0;
 }
 
@@ -478,7 +470,7 @@ static int jzcodec_dapm_event(struct snd_soc_codec *codec, int event)
 
 #define JZCODEC_FORMATS (SNDRV_PCM_FORMAT_S8 | SNDRV_PCM_FMTBIT_S16_LE)
 
-struct snd_soc_codec_dai jzcodec_dai = {
+struct snd_soc_dai jzcodec_dai = {
 	.name = "JZCODEC",
 	.playback = {
 		.stream_name = "Playback",
@@ -497,8 +489,6 @@ struct snd_soc_codec_dai jzcodec_dai = {
 		.prepare = jzcodec_pcm_prepare,
 		.hw_params = jzcodec_hw_params,
 		.shutdown = jzcodec_shutdown,
-	},
-	.dai_ops = {
 		.digital_mute = jzcodec_mute,
 		.set_sysclk = jzcodec_set_dai_sysclk,
 		.set_fmt = jzcodec_set_dai_fmt,
@@ -518,7 +508,7 @@ static int jzcodec_suspend(struct platform_device *pdev, pm_message_t state)
 	jzcodec_reg_pm[ICODEC_2_LOW] = jzcodec_read_reg_cache(codec, ICODEC_2_LOW);
 	jzcodec_reg_pm[ICODEC_2_HIGH] = jzcodec_read_reg_cache(codec, ICODEC_2_HIGH);
 
-	jzcodec_dapm_event(codec, SNDRV_CTL_POWER_D3cold);
+	jzcodec_set_bias_level(codec, SND_SOC_BIAS_OFF);
 	return 0;
 }
 
@@ -528,7 +518,7 @@ static int jzcodec_resume(struct platform_device *pdev)
 	struct snd_soc_codec *codec = socdev->codec;
 	u16 reg_val;
 
-	jzcodec_dapm_event(codec, SNDRV_CTL_POWER_D3hot);
+	jzcodec_set_bias_level(codec, SND_SOC_BIAS_STANDBY);
 	reg_val = jzcodec_reg_pm[ICODEC_1_LOW];
 	jzcodec_write(codec, ICODEC_1_LOW, reg_val);
 	reg_val = jzcodec_reg_pm[ICODEC_1_HIGH];
@@ -538,7 +528,7 @@ static int jzcodec_resume(struct platform_device *pdev)
 	reg_val = jzcodec_reg_pm[ICODEC_2_HIGH];
 	jzcodec_write(codec, ICODEC_2_HIGH, reg_val);
 
-	jzcodec_dapm_event(codec, codec->suspend_dapm_state);
+	jzcodec_set_bias_level(codec, codec->suspend_bias_level);
 	return 0;
 }
 #else
@@ -574,7 +564,7 @@ static int jzcodec_init(struct snd_soc_device *socdev)
 	codec->owner = THIS_MODULE;
 	codec->read = jzcodec_read_reg_cache;
 	codec->write = jzcodec_write;
-	codec->dapm_event = jzcodec_dapm_event;
+	codec->set_bias_level = jzcodec_set_bias_level;
 	codec->dai = &jzcodec_dai;
 	codec->num_dai = 1;
 	codec->reg_cache_size = sizeof(jzcodec_reg_LH);
@@ -591,7 +581,7 @@ static int jzcodec_init(struct snd_soc_device *socdev)
 	}
 
 	/* power on device */
-	jzcodec_dapm_event(codec, SNDRV_CTL_POWER_D3hot);
+	jzcodec_set_bias_level(codec, SND_SOC_BIAS_STANDBY);
   
 	/* clear suspend bit of jz4740 internal codec */
 	reg_val = jzcodec_read_reg_cache(codec, ICODEC_1_LOW);
@@ -617,7 +607,7 @@ static int jzcodec_init(struct snd_soc_device *socdev)
 	jzcodec_add_controls(codec);
 	jzcodec_add_widgets(codec);
 
-	ret = snd_soc_register_card(socdev);
+	ret = snd_soc_init_card(socdev);
 	if (ret < 0) {
 		printk(KERN_ERR "jzcodec: failed to register card\n");
 		goto card_err;
@@ -694,7 +684,7 @@ static int jzcodec_remove(struct platform_device *pdev)
 	struct snd_soc_codec *codec = socdev->codec;
 
 	if (codec->control_data)
-		jzcodec_dapm_event(codec, SNDRV_CTL_POWER_D3cold);
+		jzcodec_set_bias_level(codec, SND_SOC_BIAS_OFF);
 
 	snd_soc_free_pcms(socdev);
 	snd_soc_dapm_free(socdev);

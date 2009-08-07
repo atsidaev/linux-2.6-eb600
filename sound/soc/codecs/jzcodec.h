@@ -16,7 +16,7 @@
 #define JZCODEC_CACHEREGNUM  4
 #define JZCODEC_SYSCLK	0
 
-extern struct snd_soc_codec_dai jzcodec_dai;
+extern struct snd_soc_dai jzcodec_dai;
 extern struct snd_soc_codec_device soc_codec_dev_jzcodec;
 
 #endif

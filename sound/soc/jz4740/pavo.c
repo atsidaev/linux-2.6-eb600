@@ -13,7 +13,6 @@
 #include <linux/timer.h>
 #include <linux/interrupt.h>
 #include <linux/platform_device.h>
-#include <sound/driver.h>
 #include <sound/core.h>
 #include <sound/pcm.h>
 #include <sound/soc.h>
@@ -86,14 +85,33 @@ static void pavo_ext_control(struct snd_soc_codec *codec)
 		spk = 1;
 
 	/* set the enpoints to their new connetion states */
-	snd_soc_dapm_set_endpoint(codec, "Ext Spk", spk);
-	snd_soc_dapm_set_endpoint(codec, "Mic Jack", mic);
-	snd_soc_dapm_set_endpoint(codec, "Line Jack", line);
-	snd_soc_dapm_set_endpoint(codec, "Headphone Jack", hp);
-	snd_soc_dapm_set_endpoint(codec, "Headset Jack", hs);
+	if (spk)
+		snd_soc_dapm_enable_pin(codec, "Ext Spk");
+	else
+		snd_soc_dapm_disable_pin(codec, "Ext Spk");
+
+	if (mic)
+		snd_soc_dapm_enable_pin(codec, "Mic Jack");
+	else
+		snd_soc_dapm_disable_pin(codec, "Mic Jack");
+
+	if (line)
+		snd_soc_dapm_enable_pin(codec, "Line Jack");
+	else
+		snd_soc_dapm_disable_pin(codec, "Line Jack");
+
+	if (hp)
+		snd_soc_dapm_enable_pin(codec, "Headphone Jack");
+	else
+		snd_soc_dapm_disable_pin(codec, "Headphone Jack");
+
+	if (hs)
+		snd_soc_dapm_enable_pin(codec, "Headset Jack");
+	else
+		snd_soc_dapm_enable_pin(codec, "Headset Jack");
 
 	/* signal a DAPM event */
-	snd_soc_dapm_sync_endpoints(codec);
+	snd_soc_dapm_sync(codec);
 }
 
 static int pavo_startup(struct snd_pcm_substream *substream)
@@ -119,30 +137,30 @@ static int pavo_hw_params(struct snd_pcm_substream *substream,
 	struct snd_pcm_hw_params *params)
 {
 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
-	struct snd_soc_codec_dai *codec_dai = rtd->dai->codec_dai;
-	struct snd_soc_cpu_dai *cpu_dai = rtd->dai->cpu_dai;
+	struct snd_soc_dai *codec_dai = rtd->dai->codec_dai;
+	struct snd_soc_dai *cpu_dai = rtd->dai->cpu_dai;
 	int ret = 0;
 
 	/* set codec DAI configuration */
-	ret = codec_dai->dai_ops.set_fmt(codec_dai, SND_SOC_DAIFMT_I2S |
+	ret = codec_dai->ops.set_fmt(codec_dai, SND_SOC_DAIFMT_I2S |
 		SND_SOC_DAIFMT_NB_NF | SND_SOC_DAIFMT_CBS_CFS);
 	if (ret < 0)
 		return ret;
 
 	/* set cpu DAI configuration */
-	ret = cpu_dai->dai_ops.set_fmt(cpu_dai, SND_SOC_DAIFMT_I2S |
+	ret = cpu_dai->ops.set_fmt(cpu_dai, SND_SOC_DAIFMT_I2S |
 		SND_SOC_DAIFMT_NB_NF | SND_SOC_DAIFMT_CBS_CFS);
 	if (ret < 0)
 		return ret;
 
 	/* set the codec system clock for DAC and ADC */
-	ret = codec_dai->dai_ops.set_sysclk(codec_dai, JZCODEC_SYSCLK, 111,
+	ret = codec_dai->ops.set_sysclk(codec_dai, JZCODEC_SYSCLK, 111,
 		SND_SOC_CLOCK_IN);
 	if (ret < 0)
 		return ret;
 
 	/* set the I2S system clock as input (unused) */
-	ret = cpu_dai->dai_ops.set_sysclk(cpu_dai, JZ4740_I2S_SYSCLK, 0,
+	ret = cpu_dai->ops.set_sysclk(cpu_dai, JZ4740_I2S_SYSCLK, 0,
 		SND_SOC_CLOCK_IN);
 	if (ret < 0)
 		return ret;
@@ -196,7 +214,7 @@ static int pavo_set_spk(struct snd_kcontrol *kcontrol,
 	return 1;
 }
 
-static int pavo_amp_event(struct snd_soc_dapm_widget *w, int event)
+static int pavo_amp_event(struct snd_soc_dapm_widget *w, struct snd_kcontrol *c, int event)
 {
 	if (SND_SOC_DAPM_EVENT_ON(event))
 		//set_scoop_gpio(&corgiscoop_device.dev, PAVO_SCP_APM_ON);
@@ -208,7 +226,7 @@ static int pavo_amp_event(struct snd_soc_dapm_widget *w, int event)
 	return 0;
 }
 
-static int pavo_mic_event(struct snd_soc_dapm_widget *w, int event)
+static int pavo_mic_event(struct snd_soc_dapm_widget *w, struct snd_kcontrol *c, int event)
 {
 	if (SND_SOC_DAPM_EVENT_ON(event))
 		//set_scoop_gpio(&corgiscoop_device.dev, CORGI_SCP_MIC_BIAS);
@@ -230,7 +248,7 @@ SND_SOC_DAPM_HP("Headset Jack", NULL),
 };
 
 /* pavo machine audio map (connections to the codec pins) */
-static const char *audio_map[][3] = {
+static const struct snd_soc_dapm_route audio_map[] = {
 
 	/* headset Jack  - in = micin, out = LHPOUT*/
 	{"Headset Jack", NULL, "LHPOUT"},
@@ -248,8 +266,6 @@ static const char *audio_map[][3] = {
 
 	/* Same as the above but no mic bias for line signals */
 	{"MICIN", NULL, "Line Jack"},
-
-	{NULL, NULL, NULL},
 };
 
 static const char *jack_function[] = {"Headphone", "Mic", "Line", "Headset",
@@ -274,8 +290,8 @@ static int pavo_jzcodec_init(struct snd_soc_codec *codec)
 {
 	int i, err;
 
-	snd_soc_dapm_set_endpoint(codec, "LLINEIN", 0);
-	snd_soc_dapm_set_endpoint(codec, "RLINEIN", 0);
+	snd_soc_dapm_disable_pin(codec, "LLINEIN");
+	snd_soc_dapm_disable_pin(codec, "RLINEIN");
 
 	/* Add pavo specific controls */
 	for (i = 0; i < ARRAY_SIZE(jzcodec_pavo_controls); i++) {
@@ -291,12 +307,9 @@ static int pavo_jzcodec_init(struct snd_soc_codec *codec)
 	}
 
 	/* Set up pavo specific audio path audio_map */
-	for(i = 0; audio_map[i][0] != NULL; i++) {
-		snd_soc_dapm_connect_input(codec, audio_map[i][0],
-			audio_map[i][1], audio_map[i][2]);
-	}
+	snd_soc_dapm_add_routes(codec, audio_map, ARRAY_SIZE(audio_map));
 
-	snd_soc_dapm_sync_endpoints(codec);
+	snd_soc_dapm_sync(codec);
 	return 0;
 }
 
@@ -311,16 +324,16 @@ static struct snd_soc_dai_link pavo_dai = {
 };
 
 /* pavo audio machine driver */
-static struct snd_soc_machine snd_soc_machine_pavo = {
+static struct snd_soc_card snd_soc_pavo = {
 	.name = "Pavo",
+	.platform = &jz4740_soc_platform,
 	.dai_link = &pavo_dai,
 	.num_links = 1,
 };
 
 /* pavo audio subsystem */
 static struct snd_soc_device pavo_snd_devdata = {
-	.machine = &snd_soc_machine_pavo,
-	.platform = &jz4740_soc_platform,
+	.card = &snd_soc_pavo,
 	.codec_dev = &soc_codec_dev_jzcodec,
 	//.codec_data
 };
