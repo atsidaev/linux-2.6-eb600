@@ -5,6 +5,8 @@
  *
  */
 
+#define DEBUG
+
 #include <linux/autoconf.h>
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -79,6 +81,54 @@ static int jz_rtc_set_time(struct device *dev, struct rtc_time *rtc_tm)
 	return 0;
 }
 
+static unsigned int get_rcr(void)
+{
+	unsigned int rcr;
+	unsigned long flags;
+
+	spin_lock_irqsave(&rtc_lock, flags);
+
+	while ( !__rtc_write_ready() ) ;
+	rcr = REG_RTC_RCR;
+
+	spin_unlock_irqrestore(&rtc_lock, flags);
+	return rcr;
+}
+
+static void mask_rtc_irq_bit( int bit )
+{
+	unsigned long flags;
+
+	spin_lock_irqsave(&rtc_lock, flags);
+
+	while ( !__rtc_write_ready() ) ;
+	REG_RTC_RCR &= ~(1<<bit);
+
+	spin_unlock_irqrestore(&rtc_lock, flags);
+}
+
+static void set_rtc_irq_bit( int bit )
+{
+	unsigned long flags;
+
+	spin_lock_irqsave(&rtc_lock, flags);
+
+	while ( !__rtc_write_ready() ) ;
+	REG_RTC_RCR |= (1<<bit);
+
+	spin_unlock_irqrestore(&rtc_lock, flags);
+}
+
+static int jz_rtc_alarm_irq_enable(struct device *dev, unsigned int enabled)
+{
+	if (enabled)
+		set_rtc_irq_bit(RTC_ALM_EN);
+	else
+		mask_rtc_irq_bit(RTC_ALM_EN);
+
+	return 0;
+}
+
 static int jz_rtc_get_alarm(struct device *dev, struct rtc_wkalrm *alm_tm)
 {
 	unsigned long lval;
@@ -130,7 +180,6 @@ static int jz_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alm_tm)
 			while ( !__rtc_write_ready() ) ;
 			__rtc_enable_alarm();
 		}
-
 //		while ( !__rtc_write_ready() ) ;
 //		if ( !(REG_RTC_RCR & RTC_RCR_AIE) ) { /* Enable alarm irq */
 //			__rtc_enable_alarm_irq();
@@ -141,6 +190,7 @@ static int jz_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alm_tm)
 //		while ( !__rtc_write_ready() ) ;
 //		__rtc_enable_alarm_irq();
 	}
+	jz_rtc_alarm_irq_enable(dev, alm_tm->enabled);
 
 	spin_unlock_irqrestore(&rtc_lock, flags);
 	return 0;
@@ -203,44 +253,6 @@ static int set_rtc_wakeup_alarm(struct rtc_wkalrm *wkalm)
 }
 #endif
 
-static void set_rtc_irq_bit( int bit )
-{
-	unsigned long flags;
-
-	spin_lock_irqsave(&rtc_lock, flags);
-
-	while ( !__rtc_write_ready() ) ;
-	REG_RTC_RCR |= (1<<bit);
-
-	spin_unlock_irqrestore(&rtc_lock, flags);
-}
-
-static unsigned int get_rcr(void)
-{
-	unsigned int rcr;
-	unsigned long flags;
-
-	spin_lock_irqsave(&rtc_lock, flags);
-
-	while ( !__rtc_write_ready() ) ;
-	rcr = REG_RTC_RCR;
-
-	spin_unlock_irqrestore(&rtc_lock, flags);
-	return rcr;
-}
-
-static void mask_rtc_irq_bit( int bit )
-{
-	unsigned long flags;
-
-	spin_lock_irqsave(&rtc_lock, flags);
-
-	while ( !__rtc_write_ready() ) ;
-	REG_RTC_RCR &= ~(1<<bit);
-
-	spin_unlock_irqrestore(&rtc_lock, flags);
-}
-
 static irqreturn_t jz_rtc_interrupt(int irq, void *dev_id)
 {
 	struct rtc_device *rdev = dev_id;
@@ -275,16 +287,6 @@ static int jz_rtc_set_irq_state(struct device *dev, int enabled)
 		set_rtc_irq_bit(RTC_1HZIE);
 	} else
 		mask_rtc_irq_bit(RTC_1HZIE);
-
-	return 0;
-}
-
-static int jz_rtc_alarm_irq_enable(struct device *dev, unsigned int enabled)
-{
-	if (enabled)
-		set_rtc_irq_bit(RTC_ALM_EN);
-	else
-		mask_rtc_irq_bit(RTC_ALM_EN);
 
 	return 0;
 }
@@ -335,13 +337,15 @@ static int __init jz_rtc_probe(struct platform_device *pdev)
 		REG_RTC_RCR |= RTC_RCR_AE | RTC_RCR_RTCE;
 	}
 	/* clear irq flags */
+	mask_rtc_irq_bit(RTC_1HZIE);
 	__rtc_clear_1Hz_flag();
 	/* In a alarm reset, we expect a alarm interrupt. 
 	 * We can do something in the interrupt handler.
 	 * So, do not clear alarm flag.
 	 */
-/*	__rtc_clear_alarm_flag(); */
+	__rtc_clear_alarm_flag();
 
+	device_init_wakeup(&pdev->dev, 1);
 
 	rtc = rtc_device_register("jz", &pdev->dev, &jz_rtcops, THIS_MODULE);
 
@@ -376,9 +380,10 @@ static int int_save;
 
 static int jz_rtc_suspend(struct platform_device *pdev, pm_message_t state)
 {
-	int_save = get_rcr() & RTC_1HZIE;
+	int_save = get_rcr() & (1 << RTC_1HZIE);
 
 	mask_rtc_irq_bit(RTC_1HZIE);
+	__rtc_clear_alarm_flag();
 
 	return 0;
 }
@@ -387,6 +392,8 @@ static int jz_rtc_resume(struct platform_device *pdev)
 {
 	if (int_save)
 		set_rtc_irq_bit(RTC_1HZIE);
+	else
+		mask_rtc_irq_bit(RTC_1HZIE);
 
 	return 0;
 }
