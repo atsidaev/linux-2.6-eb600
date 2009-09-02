@@ -298,7 +298,7 @@ static int jz_pm_do_sleep(void)
 	 */
 
 	/* enable RTC alarm */
-//	__intc_unmask_irq(IRQ_RTC);
+	__intc_unmask_irq(IRQ_RTC);
 #if 0
         /* make system wake up after n seconds by RTC alarm */
 	unsigned int v, n;
