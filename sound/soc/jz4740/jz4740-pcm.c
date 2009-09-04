@@ -12,7 +12,6 @@
 #include <linux/slab.h>
 #include <linux/dma-mapping.h>
 
-#include <sound/driver.h>
 #include <sound/core.h>
 #include <sound/pcm.h>
 #include <sound/pcm_params.h>
@@ -680,6 +679,19 @@ struct snd_soc_platform jz4740_soc_platform = {
 };
 
 EXPORT_SYMBOL_GPL(jz4740_soc_platform);
+
+static int __init jz4740_pcm_modinit(void)
+{
+	return snd_soc_register_platform(&jz4740_soc_platform);
+}
+module_init(jz4740_pcm_modinit);
+
+static void __exit jz4740_pcm_modexit(void)
+{
+	snd_soc_unregister_platform(&jz4740_soc_platform);
+}
+module_exit(jz4740_pcm_modexit);
+
 
 MODULE_AUTHOR("Richard");
 MODULE_DESCRIPTION("Ingenic Jz4740 PCM DMA module");

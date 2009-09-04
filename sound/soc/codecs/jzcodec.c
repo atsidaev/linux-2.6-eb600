@@ -703,6 +703,18 @@ struct snd_soc_codec_device soc_codec_dev_jzcodec = {
 
 EXPORT_SYMBOL_GPL(soc_codec_dev_jzcodec);
 
+static int __init jzcodec_modinit(void)
+{
+	return snd_soc_register_dai(&jzcodec_dai);
+}
+module_init(jzcodec_modinit);
+
+static void __exit jzcodec_modexit(void)
+{
+	snd_soc_unregister_dai(&jzcodec_dai);
+}
+module_exit(jzcodec_modexit);
+
 MODULE_DESCRIPTION("ASoC JZCODEC driver");
 MODULE_AUTHOR("Richard");
 MODULE_LICENSE("GPL");

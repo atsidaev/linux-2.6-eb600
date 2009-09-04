@@ -256,6 +256,18 @@ struct snd_soc_cpu_dai jz4740_ac97_dai[] = {
 EXPORT_SYMBOL_GPL(jz4740_ac97_dai);
 EXPORT_SYMBOL_GPL(soc_ac97_ops);
 
+static int __init jz4740_ac97_init(void)
+{
+	return snd_soc_register_dais(jz4740_ac97_dai, ARRAY_SIZE(jz4740_ac97_dai));
+}
+module_init(jz4740_ac97_init);
+
+static void __exit bfin_ac97_exit(void)
+{
+	snd_soc_unregister_dai(jz4740_ac97_dai, ARRAY_SIZE(jz4740_ac97_dai));
+}
+module_exit(jz4740_ac97_exit);
+
 MODULE_AUTHOR("Richard");
 MODULE_DESCRIPTION("AC97 driver for the Ingenic jz4740 chip");
 MODULE_LICENSE("GPL");

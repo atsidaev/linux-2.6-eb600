@@ -286,6 +286,18 @@ struct snd_soc_dai jz4740_i2s_dai = {
 
 EXPORT_SYMBOL_GPL(jz4740_i2s_dai);
 
+static int __init jz4740_i2s_modinit(void)
+{
+	return snd_soc_register_dai(&jz4740_i2s_dai);
+}
+module_init(jz4740_i2s_modinit);
+
+static void __exit jz4740_i2s_modexit(void)
+{
+	snd_soc_unregister_dai(&jz4740_i2s_dai);
+}
+module_exit(jz4740_i2s_modexit);
+
 /* Module information */
 MODULE_AUTHOR("Richard, cjfeng@ingenic.cn, www.ingenic.cn");
 MODULE_DESCRIPTION("jz4740 I2S SoC Interface");
