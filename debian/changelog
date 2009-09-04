@@ -1,3 +1,22 @@
+linux-2.6 (2.6.29-18) asimov; urgency=low
+
+  [ Yauhen Kharuzhy ]
+  * rtc-jz: Make alarm works
+  * JZ4740: Enable waking up by RTC
+  * n516-lpc: Do not suspend when event has been received during
+    suspending of system
+  * i2c-jz47xx: Increase timeout and add error handling
+  * ALSA SOC: Make JZ4740 drivers working
+  * metronomefb: Decrease adaptive refresh treshold to 5%
+
+  [ Mikhail Gusarov ]
+  * Mount root filesystem on V3/V3ext with noatime option.
+
+  [ Yauhen Kharuzhy ]
+  * metronomefb: Enable border update with white color
+
+ -- Yauhen Kharuzhy <jekhor@gmail.com>  Sat, 05 Sep 2009 01:21:21 +0300
+
 linux-2.6 (2.6.29-17) asimov; urgency=low
 
   [ Mikhail Gusarov ]
