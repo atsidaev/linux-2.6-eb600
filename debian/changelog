@@ -1,3 +1,9 @@
+linux-2.6 (2.6.29-21) asimov; urgency=low
+
+  * n516-usb: Suppress false USB connect/disconnect events
+
+ -- Yauhen Kharuzhy <jekhor@gmail.com>  Mon, 21 Sep 2009 00:41:23 +0300
+
 linux-2.6 (2.6.29-20) asimov; urgency=low
 
   * N516: Enable pull-up resistor on UART0 Rx pin
