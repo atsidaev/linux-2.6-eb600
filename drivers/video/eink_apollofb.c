@@ -186,6 +186,10 @@ static void apollo_wakeup(struct apollofb_par *par)
 	udelay(5);
 	par->ops->set_ctl_pin(H_DS, 1);
 	apollo_wait_for_ack_clear(par);
+
+	apollo_send_command(par, APOLLO_SET_DEPTH);
+	apollo_send_data(par, 0x02);
+
 }
 
 static void apollofb_apollo_update_part(struct apollofb_par *par,
